@@ -1,34 +1,93 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="resources/css/logReg.css" rel="stylesheet">
+    <link href="{{ asset('css/logReg.css') }}" rel="stylesheet">
+    <script src="{{ asset('js/logReg.js') }}"></script>
     <title>Document</title>
 </head>
-<body style="display: flex; justify-content: center; align-items: center; height: 100vh;" >
-    <div style=" display: inline-block; gap: 20px; border: 1px solid black; padding: 20px;">
-        <h2>Register</h2>
-        <form action="/register" method="POST">
-            @csrf
-            <input type="text" name="first_name" placeholder="First name" required>
-            <input type="text" name="middle_name" placeholder="Middle name">
-            <input type="text" name="last_name" placeholder="Last name" required>
-            <input type="text" name="email" placeholder="email" required>
-            <input type="password" name="password" placeholder="password" required>
-            <input type="password" name="password_confirmation" placeholder="Confirm Password" required>
-            <button type="submit">Register</button>
+<body>
+
+<div class="bg bg1"></div>
+<div class="bg bg2"></div>
+<div class="bg bg3"></div>
+<div class="bg bg4"></div>
+<div class="bg bg5"></div>
+
+<nav class="logo-container">
+    <img class="logo-img" src="assets/logo.png" alt="LUMA Logo">
+</nav>
+
+<section class="login-section">
+    <div class="register-container hidden">
+        <form action="/register" method="post">
+            <h2>HELLO NEWUSER</h2>
+
+            <div class="input-box name">
+                <input class="first" type="text" name="first_name" placeholder="Firstname" required>
+                <input class="middle" type="text" name="middle_name" placeholder="Middlename" required>
+                <input class="last" type="text" name="last_name" placeholder="Lastname" required>
+            </div>
+
+            <div class="input-box">
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+
+            <div class="input-box">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+
+            <div class="input-box">
+                <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+            </div>
+
+            <button type="submit" class="btn">REGISTER</button>
+
+            <div class="create-account">
+                Already have an account?<br>
+                <button type="button" class="create-btn" id="showLogin">
+                    Login
+                </button>
+            </div>
+
+            <div class="social-register">
+                <img class="img1" src="assets/google.png">
+                <strong>Continue with Google</strong>
+            </div>
         </form>
     </div>
-    <div style=" display: inline-block; gap: 20px; border: 1px solid black; padding: 20px;">
-        <h2>Login</h2>
-        <form action="/login" method="POST">
-            @csrf
-            <input type="text" name="email" placeholder="email" required>
-            <input type="password" name="password" placeholder="password" required>
-            <button type="submit">Login</button>
+
+    <div class="login-container">
+        <form action="/login" method="post">
+            <h2>WELCOME BACK</h2>
+
+            <div class="input-box">
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+
+            <div class="input-box">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+
+            <div class="forgot">Forgot Password?</div>
+
+            <button type="submit" class="btn">LOG IN</button>
+
+            <div class="create-account">
+                Don't have an account?<br>
+                <button type="button" class="create-btn" id="showRegister">
+                    Create Account
+                </button>
+            </div>
+
+            <div class="social-login">
+                <img class="img1" src="assets/google.png">
+                <strong>Continue with Google</strong>
+            </div>
         </form>
     </div>
+</section>
+
 </body>
 </html>

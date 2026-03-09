@@ -18,20 +18,28 @@ class AuthController extends Controller
             'confirm_password' => ['required', 'same:password'],
         ]);
 
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'middle_name' => $request->middle_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role_id' => 3, 
-            'user_status_id' => 1,
-        ]);
-
-        if($user){
-            return response()->json(['message' => 'User created succesfully!', 'user' => $user], 200);
+        try {
+            $user = User::create([
+                'first_name' => $request->first_name,
+                'middle_name' => $request->middle_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role_id' => 3,
+                'user_status_id' => 1
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to create user',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        return response()->json(['message' => 'User created succesfully!', 'user' => $user], 200);
+
+        if(!$user){
+            return response()->json(['message' => 'Failed to create user'], 500);
+        }
+
+            return response()->json(['message' => 'User created successfully!', 'user' => $user], 201);
     }
 
     public function login(Request $request){
@@ -48,12 +56,12 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['message' => 'User logged in succesfully!', 'user' => $user, 'token' => $token]);
+        return response()->json(['message' => 'User logged in succesfully!', 'user' => $user, 'token' => $token], 200);
     }
 
     public function logout(Request $request){
         $request->user()->tokens()->delete();
 
-        return response()->json(['message' => 'User logged out succesfully!']);
+        return response()->json(['message' => 'User logged out succesfully!'], 200);
     }
 }
