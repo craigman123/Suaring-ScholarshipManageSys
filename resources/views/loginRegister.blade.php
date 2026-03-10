@@ -20,13 +20,26 @@
 </nav>
 
 <section class="login-section">
+    @if(session('success'))
+    <div class="alert alert-success show">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-error show">{{ session('error') }}</div>
+    @endif
+
+    @if(session('message'))
+        <div class="alert alert-info show">{{ session('message') }}</div>
+    @endif
+
     <div class="register-container hidden">
-        <form action="/register" method="post">
+        <form action="{{ route('register.submit') }}" method="post">
+            @csrf
             <h2>HELLO NEWUSER</h2>
 
             <div class="input-box name">
                 <input class="first" type="text" name="first_name" placeholder="Firstname" required>
-                <input class="middle" type="text" name="middle_name" placeholder="Middlename" required>
+                <input class="middle" type="text" name="middle_name" placeholder="Middlename">
                 <input class="last" type="text" name="last_name" placeholder="Lastname" required>
             </div>
 
@@ -39,7 +52,7 @@
             </div>
 
             <div class="input-box">
-                <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+                <input type="password" name="password_confirmation" placeholder="Confirm Password" required>
             </div>
 
             <button type="submit" class="btn">REGISTER</button>
@@ -59,7 +72,8 @@
     </div>
 
     <div class="login-container">
-        <form action="/login" method="post">
+        <form action="{{ route('login.submit') }}" method="post">
+            @csrf
             <h2>WELCOME BACK</h2>
 
             <div class="input-box">

@@ -17,3 +17,22 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    const alerts = document.querySelectorAll('.alert.show');
+    alerts.forEach(alert => {
+   
+        setTimeout(() => {
+            alert.style.opacity = 0; 
+         
+            setTimeout(() => alert.remove(), 500);
+        }, 3000); 
+    });
+});
+
+window.addEventListener("pageshow", function(event) {
+        if (event.persisted || (window.performance &&
+                 window.performance.getEntriesByType("navigation")[0].type === "back_forward")) {
+            window.location.reload();
+        }
+    });

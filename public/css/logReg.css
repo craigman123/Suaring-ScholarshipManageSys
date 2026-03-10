@@ -23,7 +23,7 @@ body {
 }
 
 .bg1 { background-image: url("../assets/grad.jpg"); animation-delay: 0s; }
-.bg2 { background-image: url("../assets/grad2.png"); animation-delay: 5s; }
+.bg2 { background-image: url("../assets/grad2.jpg"); animation-delay: 5s; }
 .bg3 { background-image: url("../assets/grad3.jpg"); animation-delay: 10s; }
 .bg4 { background-image: url("../assets/grad4.jpg"); animation-delay: 15s; }
 .bg5 { background-image: url("../assets/grad5.jpg"); animation-delay: 20s; }
@@ -34,10 +34,10 @@ body {
 .bg1::after {
   content: '';
   position: absolute;
-  inset: 0; /* top:0; left:0; width:100%; height:100% */
-  background: rgba(0,0,0,0.5); /* dim overlay */
+  inset: 0;
+  background: rgba(0,0,0,0.5); 
   pointer-events: none;
-  z-index: 1; /* above the background but below content */
+  z-index: 1; 
 }
 
 @keyframes crossfade {
@@ -173,10 +173,10 @@ body::before {
 
     background: linear-gradient(
         45deg,
-        rgb(16, 53, 15),
-        rgba(44, 95, 10, 0.742),
-        rgb(73, 147, 8),
-        rgb(72, 205, 10)
+        rgb(15, 26, 53),
+        rgba(10, 55, 95, 0.742),
+        rgb(8, 105, 147),
+        rgb(10, 173, 205)
     );
 
     background-size: 300% 300%;
@@ -252,4 +252,70 @@ body::before {
     "first middle"
     "last last";
     padding-top: 1rem;
+}
+
+/* Alert Styles */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.alert-error {
+    background-color: #ff4444;
+    color: white;
+    border: 2px solid #cc0000;
+}
+
+.alert-success {
+    background-color: #00C851;
+    color: white;
+    border: 2px solid #007E33;
+}
+
+.alert-info {
+    background-color: #33b5e5;
+    color: white;
+    border: 2px solid #0099cc;
+}
+
+.alert {
+    position: fixed;       /* float over the page */
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 6px;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Success: green */
+.alert-success {
+    background-color: #4caf50;
+}
+
+/* Error: red */
+.alert-error {
+    background-color: #f44336;
+}
+
+/* Info: blue */
+.alert-info {
+    background-color: #2196f3;
+}
+
+/* Fade in */
+.alert.show {
+    opacity: 1;
 }

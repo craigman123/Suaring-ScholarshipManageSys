@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Role;
+
 return new class extends Migration
 {
     /**
@@ -11,21 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('scholarships', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('image_path');
+            $table->string('title');
+            $table->text('description');
+            $table->date('deadline');
+            $table->string('status');
             $table->timestamps();
         });
-
-        $roles = [
-            ['name' => 'Admin'],
-            ['name' => 'Staff'],
-            ['name' => 'Teacher'],
-        ];
-
-        foreach($roles as $role){
-            Role::create($role);
-        }
     }
 
     /**
@@ -33,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('scholarships');
     }
 };
