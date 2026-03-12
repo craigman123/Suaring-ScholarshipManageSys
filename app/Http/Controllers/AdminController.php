@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Scholarship;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -12,17 +13,21 @@ class AdminController extends Controller
     public function dashboard()
     {
         $totalUsers = User::count();
-        $users = User::all(); 
+        $users = User::where('created_at', '>=', Carbon::now()->subDays(2))->get();
         $totalScholarships = Scholarship::count();
-        $pendingApprovals = Scholarship::where('status', 'pending')->count();
-        // $rejectedApplications = Application::where('status', 'rejected')->count();
-
+        $pendingScholarships = Scholarship::where('status', 'Pending')->count();
+        $approvedScholarships = Scholarship::where('status', 'Approved')->count();
+        $rejectedScholarships = Scholarship::where('status', 'Rejected')->count();
+        $holdScholarships = Scholarship::where('status', 'Hold')->count();
+        
         return view('admindashboard', compact(
             'totalUsers',
             'totalScholarships',
             'users',
-            'pendingApprovals',
-            // 'rejectedApplications'
+            'pendingScholarships',
+            'rejectedScholarships',
+            'approvedScholarships',
+            'holdScholarships'
         ));
     }
 

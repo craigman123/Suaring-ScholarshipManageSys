@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ScholarshipController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,18 +38,25 @@ Route::get('/studentdash', [StudentController::class, 'dashboard'])
 
 Route::middleware(['auth'])->group(function() {
     Route::get('/admindash', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::get('/scholarships', [AdminController::class, 'scholarships'])->name('admin.scholarships');
 
-    Route::get('/admin/scholarships', [ScholarshipController::class, 'index'])
+    Route::get('/admin/scholarships', [ScholarshipController::class, 'AdminwebIndex'])
     ->name('admin.scholarships');
-    Route::post('/admin/scholarships/store', [ScholarshipController::class, 'store'])
+    Route::post('/admin/scholarships/store', [ScholarshipController::class, 'AdminwebStore'])
     ->name('admin.scholarships.store');
-    Route::put('/admin/scholarships/{id}', [ScholarshipController::class, 'update'])
-    ->name('admin.scholarships.update');
-    Route::delete('/admin/scholarships/{id}', [ScholarshipController::class, 'destroy'])
+    Route::put('/admin/scholarships/{id}', [ScholarshipController::class, 'webUpdate'])
+    ->name('admin.scholarships.update');    
+    Route::delete('/admin/scholarships/{id}', [ScholarshipController::class, 'webDestroy'])
     ->name('admin.scholarships.destroy');
 
-    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/admin/users/', [UserController::class, 'AdminwebUsers'])
+    ->name('admin.users');
+    Route::post('/admin/users/store', [UserController::class, 'AdminwebUserStore'])
+    ->name('admin.users.store');
+    Route::put('/admin/users/{id}', [UserController::class, 'AdminwebUserUpdate'])
+    ->name('admin.users.update');    
+    Route::delete('/admin/users/{id}', [UserController::class, 'AdminwebUserDestroy'])
+    ->name('admin.users.destroy');
+
     Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
     Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
 

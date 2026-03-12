@@ -1,0 +1,347 @@
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+
+body { display: flex; min-height: 100vh; background: #f4f6f8; }
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    background-color: #1f1f2f;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.sidebar-logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.sidebar-logo img {
+    width: 80px;
+    margin-bottom: 10px;
+}
+
+.sidebar-logo h2 { font-size: 18px; }
+
+.sidebar-nav ul { list-style: none; }
+.sidebar-nav ul li { margin-bottom: 15px; }
+.sidebar-nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    display: block;
+    padding: 10px 15px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+.sidebar-nav ul li a.active,
+.sidebar-nav ul li a:hover { background-color: #3a3a55; }
+
+/* Main content */
+.main-content {
+    flex: 1;
+    padding: 30px;
+}
+
+header h1 { font-size: 28px; margin-bottom: 5px; }
+header p { color: #555; margin-bottom: 20px; }
+
+/* Dashboard cards */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.dashboard-cards .card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.dashboard-cards .card:hover {
+    transform: scale(1.04);
+    
+}
+
+.dashboard-cards .card h3 { font-size: 16px; margin-bottom: 10px; color: #333; }
+.dashboard-cards .card p { font-size: 24px; font-weight: bold; }
+
+/* ================= TABLE ================= */
+
+.table-container {
+    height: 65vh;
+    overflow: auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+/* scrollbar */
+.table-container::-webkit-scrollbar {
+    width: 12px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 6px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    background: #acacac8d;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: center;
+}
+
+th {
+    background: #1f1f2f;
+    color: #fff;
+}
+
+tr:nth-child(even) {
+    background-color: #f4f6f8;
+}
+
+/* action buttons */
+.edit-user-btn {
+    background-color: #292484;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 10px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.edit-user-btn:hover {
+    background-color: #3529d7;
+}
+
+.delete-user-btn {
+    background-color: #292484;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.delete-user-btn:hover {
+    background-color: #3529d7;
+}
+
+/* Add Button */
+.add-btn {
+    background-color: #3a3a55;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background 0.3s;
+    font-weight: 700;
+}
+
+.add-btn:hover {
+    background-color: #2e2e44;
+}
+
+/* Search Bar */
+.search {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 30px;
+    padding: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid #e5e5e5;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px 15px;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+.search-btn {
+    border: none;
+    background: #292484;
+    color: white;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.search-btn:hover {
+    background: #3529d7;
+    transform: scale(1.1);
+}
+
+.search-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Modal Background */
+.modal,
+.modal-edit {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+}
+
+/* Modal Content Box */
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+    animation: slideDown 0.3s ease-out;
+}
+
+.modal-content h2 {
+    text-align: center;
+}
+/* Close Button */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #333;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #ff0000;
+}
+
+/* Input and Select Styles */
+.modal-content input[type="text"],
+.modal-content input[type="email"],
+.modal-content input[type="password"],
+select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.modal-content input[type="text"] {
+    margin: 0;
+}
+
+/* Button Styles */
+button {
+    background-color: #1f73e4;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #155ab6;
+}
+
+/* Animation */
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Role Colors */
+.role-admin {
+    color: red;
+    font-weight: bold;
+}
+.role-provider {
+    color: green;
+    font-weight: bold;
+}
+.role-user {
+    color: blue;
+    font-weight: bold;
+}
+
+/* Status Colors */
+.status-active {
+    color: green;
+    font-weight: bold;
+}
+.status-inactive {
+    color: gray;
+    font-weight: bold;
+}
+
+.disabledBtn {
+    background-color: #717171;
+    color: #d4d4d4;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: not-allowed;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    opacity: 0.5;
+}
+
+.disabledBtn:hover {
+    background-color: #ff0000;
+}

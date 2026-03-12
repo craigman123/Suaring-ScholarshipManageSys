@@ -14,14 +14,11 @@ return new class extends Migration
         Schema::create('requirements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('scholarship_id')
-                ->nullable() 
-                ->constrained('scholarships')
-                ->onDelete('cascade'); 
-            $table->json('requirements'); 
+                  ->constrained('scholarships')
+                  ->onDelete('cascade');
+            $table->json('requirements')->default(json_encode(["none"]));
             $table->timestamps();
         });
-
-        
     }
 
     public function down(): void

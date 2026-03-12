@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Scholarship extends Model
 {
+
+    use HasFactory;
+
     protected $fillable = [
         'image_path', 'title', 'description', 'deadline', 'status'
     ];
 
-    public function requirements()
+    public function requirement()
     {
-        return $this->hasMany(\App\Models\Requirement::class);
+        return $this->hasOne(\App\Models\Requirements::class);
     }
 }

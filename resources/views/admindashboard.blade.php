@@ -45,12 +45,20 @@
                 <p>{{ $totalScholarships }}</p>
             </div>
             <div class="card">
-                <h3>Pending Approvals</h3>
-                <p>{{ $pendingApprovals }}</p>
+                <h3>Pending Scholarships</h3>
+                <p>{{ $pendingScholarships }}</p>
             </div>
             <div class="card">
-                <h3>Rejected Applications</h3>
-                <p>5</p>
+                <h3>Approved Scholarships</h3>
+                <p>{{ $approvedScholarships }}</p>
+            </div>
+            <div class="card">
+                <h3>Rejected Scholarships</h3>
+                <p>{{ $rejectedScholarships }}</p>
+            </div>
+            <div class="card">
+                <h3>Hold Scholarships</h3>
+                <p>{{ $holdScholarships }}</p>
             </div>
         </section>
 
