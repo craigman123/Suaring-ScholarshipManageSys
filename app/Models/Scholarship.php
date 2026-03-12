@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Scholarship extends Model
 {
-
     use HasFactory;
 
     protected $fillable = [
@@ -16,6 +15,6 @@ class Scholarship extends Model
 
     public function requirement()
     {
-        return $this->hasOne(\App\Models\Requirements::class);
+        return $this->hasOne(Requirements::class);
     }
 }

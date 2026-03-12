@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Requirements;
+use App\Models\Scholarship;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Scholarship;
-use App\Models\Requirements;
 
 class ScholarshipController extends Controller
 {   
@@ -147,6 +147,15 @@ class ScholarshipController extends Controller
 
     public function update(Request $request, $id)
     {
+        // dd([   >> debugging only
+        //     'title' => $request->input('title'),
+        //     'description' => $request->input('description'),
+        //     'deadline' => $request->input('deadline'),
+        //     'status' => $request->input('status'),
+        //     'requirement' => $request->input('requirement'),
+        //     'hasPoster' => $request->hasFile('poster')
+        // ]);
+
         $request->validate([
             'poster' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'title' => 'sometimes|string|max:255',
@@ -156,53 +165,60 @@ class ScholarshipController extends Controller
             'requirement' => 'nullable|string',
         ]);
 
-        try {
-            $scholarship = \App\Models\Scholarship::findOrFail($id);
+        if ($request->has('requirements')) {
+            return response()->json([
+                'message' => "Field 'requirements' does not exist. Do you mean 'requirement' instead?"
+            ], 422);
+        }
 
-            // Update scholarship fields even if empty
-            $scholarship->title = $request->input('title', $scholarship->title);
-            $scholarship->description = $request->input('description', $scholarship->description);
-            $scholarship->deadline = $request->input('deadline', $scholarship->deadline);
-            $scholarship->status = $request->input('status', $scholarship->status);
+        $scholarship = \App\Models\Scholarship::findOrFail($id);
 
-            // Handle poster upload
-            if ($request->hasFile('poster')) {
-                $posterPath = $request->file('poster')->store('posters', 'public');
-                $scholarship->image_path = $posterPath;
-            }
+        if ($request->hasFile('poster')) {
+            $posterPath = $request->file('poster')->store('posters', 'public');
+            $scholarship->image_path = $posterPath;
+        }
 
-            $scholarship->save();
+        if ($request->has('title')) {
+            $scholarship->title = $request->title;
+        }
 
-            // Handle requirements
-            $requirementsArray = $request->filled('requirement')
-                ? array_filter(array_map('trim', explode("\n", $request->requirement)))
-                : ["none"];
+        if ($request->has('description')) {
+            $scholarship->description = $request->description;
+        }
 
-            if ($scholarship->requirement) {
-                $scholarship->requirement->requirements = json_encode($requirementsArray);
-                $scholarship->requirement->save();
+        if ($request->has('deadline')) {
+            $scholarship->deadline = $request->deadline;
+        }
+
+        if ($request->has('status')) {
+            $scholarship->status = $request->status;
+        }
+
+        $scholarship->save();
+
+        if ($request->has('requirement')) {
+            $requirementsArray = array_filter(
+                array_map('trim', explode("\n", $request->requirement))
+            );
+
+            $requirement = Requirements::where('scholarship_id', $scholarship->id)->first();
+
+            if ($requirement) {
+                $requirement->requirements = json_encode($requirementsArray);
+                $requirement->save();
             } else {
-                $scholarship->requirement()->create([
-                    'requirements' => json_encode($requirementsArray)
+                Requirements::create([
+                    'scholarship_id' => $scholarship->id,
+                    'requirements' => json_encode($requirementsArray),
                 ]);
             }
 
-            return response()->json([
-                'message' => 'Scholarship updated successfully!',
-                'data' => [
-                    'scholarship' => $scholarship,
-                    'requirements' => $requirementsArray
-                ]
-            ]);
-
-        } catch (\Exception $e) {
-            // Return error for debugging
-            return response()->json([
-                'message' => 'Update failed',
-                'error' => $e->getMessage(),
-                'trace' => $e->getTrace()
-            ], 500);
         }
+
+        return response()->json([
+            'message' => 'Scholarship updated successfully!',
+            'data' => $scholarship
+        ]);
     }
 
     public function webUpdate(Request $request, Scholarship $id)

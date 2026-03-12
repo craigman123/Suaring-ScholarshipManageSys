@@ -135,4 +135,6 @@ class AuthController extends Controller
 
         return redirect('/')->with('message', 'User logged out succesfully!');
     }
+
+    
 }

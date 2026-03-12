@@ -7,15 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Requirements extends Model
 {
-
     use HasFactory;
 
-    protected $fillable = [
-        'scholarship_id', 'requirements'
-    ];
+    protected $fillable = ['scholarship_id', 'requirements'];
 
     public function scholarship()
     {
-        return $this->belongsTo(\App\Models\Scholarship::class);
+        return $this->belongsTo(Scholarship::class);
     }
 }
