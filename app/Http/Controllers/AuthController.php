@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogHelper;
 use App\Models\User;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -44,6 +45,8 @@ class AuthController extends Controller
                 'user_status_id' => 1, 
             ]);
 
+            LogHelper::log("REGISTRATION", "Account Succesfully Registered", auth()->user());
+
             return response()->json(['status' => 'success', 'user' => $user], 201);
         } catch (\Exception $e) {
             return response()->json([
@@ -74,6 +77,8 @@ class AuthController extends Controller
             'user_status_id' => 1,
         ]);
 
+        LogHelper::log("REGISTRATION", "Account Succesfully Registered", auth()->user());
+
         Auth::login($user);
         $request->session()->regenerate();
         return redirect()->route('student.dashboard')->with('success','Registration successful!');
@@ -100,8 +105,10 @@ class AuthController extends Controller
         } elseif ($user->role_id == 3) {
             return redirect()->route('student.dashboard');
         }elseif ($user->role_id == 2) {
-            return redirect()->route('instructor.dashboard');
+            return redirect()->route('provider.dashboard');
         }
+
+        LogHelper::log("LOG IN", "Account Succesfully logged in", auth()->user());
 
         Auth::logout();
         return redirect()->back()->with('error', 'Role not recognized');
@@ -122,6 +129,8 @@ class AuthController extends Controller
 
         $token = $user->createToken('api-token')->plainTextToken;
 
+        LogHelper::log("LOG IN", "Account Succesfully logged in", auth()->user());
+
         return response()->json([
             'message' => 'Login successful',
             'user' => $user,
@@ -133,6 +142,7 @@ class AuthController extends Controller
     public function logout(Request $request){
         $request->user()->tokens()->delete();
 
+        LogHelper::log("LOGOUT", "Account Logge Out", auth()->user());
         return redirect('/')->with('message', 'User logged out succesfully!');
     }
 

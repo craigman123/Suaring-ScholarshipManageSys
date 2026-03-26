@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogHelper;
 use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -93,6 +94,7 @@ class UserController extends Controller
             'user_status_id' => $request->status,
         ]);
 
+        LogHelper::log("CREATED USER", "Successfully created user", auth()->user()); 
         return redirect()->route('admin.users')->with('success', 'User created successfully!');
     }
 
@@ -123,6 +125,7 @@ class UserController extends Controller
 
         $user->save();
 
+        LogHelper::log("UPDATED USER", "Successfully updated user", auth()->user()); 
         return redirect()->route('admin.users')->with('success', 'User updated successfully!');
     }
 
@@ -136,6 +139,7 @@ class UserController extends Controller
 
         $user->delete();
 
+        LogHelper::log("DELETED USER", "Successfully deleted user", auth()->user()); 
         return redirect()->back()->with('success', 'User deleted successfully!');
     }
 
@@ -171,6 +175,7 @@ class UserController extends Controller
             'user_status_id' => $status,
         ]);
 
+        LogHelper::log("CREATED USER", "Successfully created user", auth()->user()); 
         return response()->json([
             'message' => 'User created successfully!',
             'user' => $user
@@ -193,6 +198,7 @@ class UserController extends Controller
 
         $user->delete();
 
+        LogHelper::log("DELETED USER", "Successfully deleted user", auth()->user()); 
         return response()->json([
             'message' => 'User deleted successfully!'
         ]);
@@ -230,6 +236,7 @@ class UserController extends Controller
 
         $user->save();
 
+        LogHelper::log("UPDATED USER", "Successfully updated user", auth()->user()); 
         return response()->json([
             'message' => 'User updated successfully!',
             'user' => $user

@@ -5,27 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\Scholarship;
 use Illuminate\Http\Request;
 
-class StudentController extends Controller
+class ApplicationsController extends Controller
 {
-    public function dashboard()
+    public function index()
     {
         $user = auth()->user();
 
+        // Get all applications with scholarship
         $applications = $user->applications()->with('scholarship')->latest()->get();
 
-        return view('studentdash', [
-            'applications' => $applications,
-            'totalScholarships' => $applications->count(),
-            'approved' => $applications->where('status', 'approved')->count(),
-            'pending' => $applications->where('status', 'pending')->count(),
-            'rejected' => $applications->where('status', 'rejected')->count(),
-        ]);
+        // Counts
+        $totalApplications = $applications->count();
+        $approvedApplications = $applications->where('status', 'approved')->count();
+        $pendingApplications = $applications->where('status', 'pending')->count();
+        $rejectedApplications = $applications->where('status', 'rejected')->count();
+
+        return view('student_applications', compact(
+            'applications',
+            'totalApplications',
+            'approvedApplications',
+            'pendingApplications',
+            'rejectedApplications'
+        ));
     }
 
-    public function applications()
+    public function dashboard()
     {
-        $scholarships = Scholarship::all();
-        return view('student_applications', compact('scholarships'));
+        return view('student_dashboard');
     }
 
     public function scholarships()

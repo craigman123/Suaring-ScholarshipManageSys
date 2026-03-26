@@ -53,4 +53,9 @@ class User extends Authenticatable
     public function userStatus(){
         return $this->belongsTo(UserStatus::class);
     }
+
+    public function applications()
+    {
+        return $this->hasMany(Application::class);
+    }
 }

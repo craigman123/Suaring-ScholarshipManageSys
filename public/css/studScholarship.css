@@ -1,0 +1,250 @@
+.scholarship-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Individual card */
+.scholarship-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Hover effect */
+.scholarship-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+/* Card image */
+.scholarship-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+/* Card content */
+.scholarship-card h3 {
+    margin: 10px;
+    font-size: 1.2em;
+}
+
+.scholarship-card p {
+    margin: 0 10px 10px 10px;
+    font-size: 0.95em;
+    color: #555;
+}
+
+/* Apply button */
+.apply-btn {
+    display: block;
+    margin: 10px;
+    padding: 10px;
+    text-align: center;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.apply-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Disabled button */
+.apply-btn.disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.back-to-top {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    position: fixed;
+    right: 20px;
+    bottom: 750px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, transform 0.2s;
+    z-index: 1000;
+}
+
+.back-to-top:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+}
+
+.back-to-top svg {
+    pointer-events: none; /* Ensures click goes to div, not SVG */
+}
+
+.image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.apply-btn.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Base badge */
+.badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 20px;
+    color: #fff;
+    z-index: 2;
+}
+
+/* 🔥 Glow animation */
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 5px rgba(255,255,255,0.2);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(255,255,255,0.8),
+                    0 0 25px rgba(255,255,255,0.6);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(255,255,255,0.2);
+    }
+}
+
+/* OPEN */
+.open {
+    background: #28a745;
+    animation: greenGlow 2.5s infinite;
+}
+
+/* CLOSED */
+.badge.closed {
+    background: #dc3545;
+    opacity: 0.8;
+}
+
+/* 🔥 URGENT (strong glow) */
+.badge.urgent {
+    background: #ff5722;
+    animation: glow 1s infinite;
+}
+
+/* ⚠️ WARNING (soft glow) */
+.badge.warning {
+    background: #ffc107;
+    color: #000;
+    animation: glow 1.5s infinite;
+}
+
+@keyframes greenGlow {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(107, 255, 74, 0.3);
+    }
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 20px rgba(83, 255, 9, 0.9);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(107, 255, 74, 0.3);
+    }
+}
+
+@keyframes pulseGlow {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(255,255,255,0.3);
+    }
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 20px rgba(255,255,255,0.9);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(255,255,255,0.3);
+    }
+}
+
+.badge.urgent {
+    animation: pulseGlow 1s infinite;
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 30px;
+    padding: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid #e5e5e5;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px 15px;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+.search-btn-scholar {
+    border: none;
+    background: #292484;
+    color: white;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.search-btn-scholar:hover {
+    background: #3529d7;
+    transform: scale(1.1);
+}
+
+.search-btn-scholar svg {
+    width: 18px;
+    height: 18px;
+}

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\ScholarshipController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,8 @@ Route::prefix('admin')->group(function () {
     Route::put('/users/{id}', [UserController::class, 'userUpdate']);
     Route::delete('/users/{id}', [UserController::class, 'userDestroy']);
     
+    Route::get('/logs', [LogController::class, 'index']);
+    Route::get('/logs/search?user_id={user_id}', [LogController::class, 'index']);
 });
 
 Route::get('/debug-user', function () {

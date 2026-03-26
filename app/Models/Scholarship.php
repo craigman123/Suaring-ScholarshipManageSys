@@ -13,8 +13,17 @@ class Scholarship extends Model
         'image_path', 'title', 'description', 'deadline', 'status'
     ];
 
+    protected $casts = [
+        'requirements' => 'array',
+    ];
+
     public function requirement()
     {
         return $this->hasOne(Requirements::class);
+    }
+
+    public function applications()
+    {
+        return $this->hasMany(Application::class);
     }
 }

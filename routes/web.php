@@ -1,9 +1,13 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ApplicationsController;
+use App\Http\Controllers\ApplyScholarshipsController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\ScholarshipController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentScholarshipController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -57,11 +61,31 @@ Route::middleware(['auth'])->group(function() {
     Route::delete('/admin/users/{id}', [UserController::class, 'AdminwebUserDestroy'])
     ->name('admin.users.destroy');
 
-    Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
+    Route::get('/reports', [LogController::class, 'WebLogs'])->name('admin.reports');
     Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
 
     Route::get('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
-    Route::get('/student/logout', [StudentController::class, 'logout'])->name('student.logout');
+});
 
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/student/logout', [StudentController::class, 'logout'])->name('student.logout');
     Route::get('/studentdash', [StudentController::class, 'dashboard'])->name('student.dashboard');
+
+    Route::get('/student/applications', [ApplicationsController::class, 'index'])
+        ->name('student.applications');
+
+    Route::prefix('student')->name('student.')->group(function () {
+        Route::get('scholarships', [StudentScholarshipController::class, 'index'])
+            ->name('scholarships');
+    
+        Route::get('applications/create/{scholarship}', [ApplyScholarshipsController::class, 'create'])
+        ->name('scholarships.view');
+        Route::post('applications/apply/{scholarship}', [ApplyScholarshipsController::class, 'ScholarshipApply'])
+            ->name('scholarships.apply');
+        
+    });
+    
+    Route::get('/student/profile', [StudentController::class, 'StudentProfile'])
+        ->name('student.profile');
 });

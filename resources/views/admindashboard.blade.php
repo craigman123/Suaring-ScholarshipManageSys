@@ -76,7 +76,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($users as $user)
+                        @forelse ($users as $user)
                             <tr>
                                 <td>{{ $user->first_name }} {{ $user->middle_name ?? '' }} {{ $user->last_name }}</td>
                                 <td>{{ $user->email }}</td>
@@ -86,27 +86,33 @@
                                             <div style="color: #A61B1B; font-weight: 700;">Admin</div>
                                             @break
                                         @case('2')
-                                            <div style="color: #50A61B;"><i>Scholarship Provider</i></div>
+                                            <div style="color: #50A61B; font-weight: 700;"><i>Scholarship Provider</i></div>
                                             @break
                                         @case('3')
-                                            <div style="color: #1b8da6;">Scholar / Student</div>
+                                            <div style="color: #1b8da6; font-weight: 700;">Scholar / Student</div>
                                             @break
                                         @default
-                                            <div style="color: gray;">Unknown</div>
+                                            <div style="color: gray; font-weight: 700;">Unknown</div>
                                     @endswitch
                                 </td>
                                 <td>{{ $user->created_at->format('M j, Y') }}</td>
                                 <td>
                                     @if($user->user_status_id == '1')
-                                        <div style="color: #50A61B;">Active</div>
+                                        <div style="color: #50A61B; font-weight: 700;">Active</div>
                                     @elseif($user->user_status_id == '2')
-                                        <div style="color: red;">Inactive</div>
+                                        <div style="color: red; font-weight: 700;">Inactive</div>
                                     @else
                                         <div style="color: gray;">Unknown</div>
                                     @endif
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: gray;">
+                                    No recent registration
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

@@ -49,7 +49,7 @@ body {
     padding: 10px 15px;
     border-radius: 4px;
     transition: background 0.2s;
-    width: 11.8vw;
+    width: 10.4vw;
 }
 .sidebar-nav ul li a.active,
 .sidebar-nav ul li a:hover {
@@ -620,7 +620,6 @@ img {
     border-radius: 5px;
     padding: 5px 5px;
     cursor: pointer;
-    width: 45%;
     transition: background-color 0.3s ease;
 }
 
@@ -639,8 +638,8 @@ img {
     border: none;
     border-radius: 5px;
     padding: 5px 5px;
+    width: 100%;
     cursor: pointer;
-    width: 45%;
     transition: background-color 0.3s ease;
 }
 

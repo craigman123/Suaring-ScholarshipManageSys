@@ -5,49 +5,49 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="{{ asset('css/studDash.css') }}" rel="stylesheet">
     <script src="{{ asset('js/studDash.js') }}"></script>
-    <title>Document</title>
+    <title>Student Dashboard</title>
 </head>
 <body>
     <div id="alert-container"></div>
 
     <aside class="sidebar">
         <div class="sidebar-logo">
-            <img src="assets/logo.png" alt="Logo">
+            <img src="{{ asset('assets/logo.png') }}" alt="Logo">
             <h2>Student Panel</h2>
         </div>
         <nav class="sidebar-nav">
             <ul>
-                <li><a href="#" class="active">Dashboard</a></li>
-                <li><a href="#">Scholarships</a></li>
-                <li><a href="#">Profile</a></li>
-                <li><a href="{{ route('student.logout') }}">Logout</a>
-
+                <li><a href="{{ route('student.dashboard') }}" class="active">Dashboard</a></li>
+                <li><a href="{{ route ('student.applications')}}">Applications</a></li>
+                <li><a href="{{ route('student.scholarships') }}">Scholarships</a></li>
+                <li><a href="{{ route('student.profile') }}">Profile</a></li>
+                <li><a href="{{ route('student.logout') }}">Logout</a></li>
             </ul>
         </nav>
     </aside>
 
     <main class="main-content">
         <header>
-            <h1>Welcome, John</h1>
+            <h1>Welcome, {{ auth()->user()->name }}</h1>
             <p>Here’s an overview of your student account.</p>
         </header>
 
         <section class="dashboard-cards">
             <div class="card">
-                <h3>Total Scholarships</h3>
-                <p>12</p>
+                <h3>Total Applications</h3>
+                <p>{{ $totalScholarships }}</p>
             </div>
             <div class="card">
-                <h3>Approved</h3>
-                <p>5</p>
+                <h3>Approved Applications</h3>
+                <p>{{ $approved }}</p>
             </div>
             <div class="card">
-                <h3>Pending</h3>
-                <p>4</p>
+                <h3>Pending Applications</h3>
+                <p>{{ $pending }}</p>
             </div>
             <div class="card">
-                <h3>Rejected</h3>
-                <p>3</p>
+                <h3>Rejected Applications</h3>
+                <p>{{ $rejected }}</p>
             </div>
         </section>
 
@@ -62,21 +62,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Academic Excellence</td>
-                        <td>Approved</td>
-                        <td>Mar 1, 2026</td>
-                    </tr>
-                    <tr>
-                        <td>Sports Scholarship</td>
-                        <td>Pending</td>
-                        <td>Mar 5, 2026</td>
-                    </tr>
-                    <tr>
-                        <td>Arts Grant</td>
-                        <td>Rejected</td>
-                        <td>Feb 20, 2026</td>
-                    </tr>
+                    @forelse($applications as $app)
+                        <tr>
+                            <td>{{ $app->scholarship->title }}</td>
+                            <td>{{ ucfirst($app->status) }}</td>
+                            <td>{{ $app->created_at->format('M d, Y') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3">No applications found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </section>

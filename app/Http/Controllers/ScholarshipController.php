@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogHelper;
 use App\Models\Requirements;
 use App\Models\Scholarship;
 use Illuminate\Http\Request;
@@ -77,6 +78,7 @@ class ScholarshipController extends Controller
         ]);
 
         if ($request->has('requirements')) {
+            LogHelper::log("ERROR", "Field 'requirements' does not exist. Do you mean 'requirement' instead?", auth()->user());
             return response()->json([
                 'message' => "Field 'requirements' does not exist. Do you mean 'requirement' instead?"
             ], 422);
@@ -94,6 +96,16 @@ class ScholarshipController extends Controller
             'status' => $request->status,
         ]);
 
+        try {
+            $requirementsArray = array_filter(array_map('trim', explode("\n", $request->requirement)));
+        } catch (\Exception $e) {
+            LogHelper::error("ERROR CREATING SCHOLARSHIP", "Error creating scholarship", auth()->user());
+            $requirementsArray = ["none"];
+            return response()->json([
+                'message' => 'Something went wrong while creating scholarship.'
+            ], 500);
+        }
+
         if ($request->requirement) {
                 $requirementsArray = array_filter(array_map('trim', explode("\n", $request->requirement)));
             } else {
@@ -105,6 +117,7 @@ class ScholarshipController extends Controller
                 'requirements' => json_encode($requirementsArray),
             ]);
 
+        LogHelper::log("CREATED SCHOLARSHIP", "Successfully created scholarship", auth()->user());
         return response()->json([
             'message' => 'Scholarship added successfully!',
             'data' => $scholarship
@@ -142,6 +155,14 @@ class ScholarshipController extends Controller
             'requirements' => json_encode($requirementsArray),
         ]);
 
+        try {
+            LogHelper::log("CREATED SCHOLARSHIP", "Successfully created scholarship", auth()->user());
+        } catch (\Exception $e) {
+            LogHelper::error("ERROR LOGGING SCHOLARSHIP", "Error logging scholarship", auth()->user());
+            return redirect()->back()->with('error', 'Something went wrong while creating scholarship.');
+        }
+
+        LogHelper::log("CREATED SCHOLARSHIP", "Successfully created scholarship", auth()->user());
         return redirect()->back()->with('success', 'Scholarship added successfully!');
     }
 
@@ -166,6 +187,7 @@ class ScholarshipController extends Controller
         ]);
 
         if ($request->has('requirements')) {
+            LogHelper::log("ERROR", "Field 'requirements' does not exist. Do you mean 'requirement' instead?", auth()->user());
             return response()->json([
                 'message' => "Field 'requirements' does not exist. Do you mean 'requirement' instead?"
             ], 422);
@@ -214,7 +236,17 @@ class ScholarshipController extends Controller
             }
 
         }
+        
+        try {
+            $scholarship->save();
+        } catch (\Exception $e) {
+            LogHelper::error("ERROR UPDATING SCHOLARSHIP", "Error updating scholarship", auth()->user()); 
+            return response()->json([
+                'message' => 'Something went wrong while updating.'
+            ], 500);
+        }
 
+        LogHelper::log("UPDATED SCHOLARSHIP", "Successfully updated scholarship", auth()->user());
         return response()->json([
             'message' => 'Scholarship updated successfully!',
             'data' => $scholarship
@@ -255,6 +287,14 @@ class ScholarshipController extends Controller
             ]);
         }
 
+        try {
+            $id->update();
+        } catch (\Exception $e) {
+            LogHelper::error("ERROR UPDATING SCHOLARSHIP", "Error updating scholarship: " . $e->getMessage(), auth()->user());
+            return redirect()->back()->with('error', 'Error updating scholarship: ' . $e->getMessage());
+        }
+
+        LogHelper::log("UPDATED SCHOLARSHIP", "Successfully updated scholarship", auth()->user());
         return redirect()->back()->with('success', 'Scholarship updated successfully!');
     }
 
@@ -274,14 +314,38 @@ class ScholarshipController extends Controller
 
             $scholarship->delete();
 
+            LogHelper::log("DELETED SCHOLARSHIP", "Successfully deleted scholarship", auth()->user());  
             return response()->json([
                 'message' => 'Scholarship deleted successfully!'
             ], 200);
 
         } else {
+            LogHelper::error("ERROR DELETING SCHOLARSHIP", "Error deleting scholarship", auth()->user()); 
             return response()->json([
                 'message' => 'Scholarship not found!'
             ], 404);
         }
     }
+
+    public function webDestroy($id)
+    {
+        $scholarship = Scholarship::find($id);
+
+        if (!$scholarship) {
+            return redirect()->back()->with('error', 'Scholarship not found.');
+        }
+
+        try {
+            $scholarship->delete();
+
+            LogHelper::log("DELETED SCHOLARSHIP", "Successfully deleted scholarship", auth()->user()); 
+
+            return redirect()->back()->with('success', 'Scholarship deleted successfully.');
+        } catch (\Exception $e) {
+            LogHelper::error("ERROR DELETING SCHOLARSHIP", "Error deleting scholarship", auth()->user()); 
+            return redirect()->back()->with('error', 'Something went wrong while deleting.');
+        }
+    }
+
+    
 }

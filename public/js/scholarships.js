@@ -112,38 +112,3 @@ window.addEventListener('DOMContentLoaded', () => {
         reader.readAsDataURL(file);
     });
 });
-
-document.addEventListener('DOMContentLoaded', () => {
-    const deleteButtons = document.querySelectorAll('.delete-btn');
-
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', async () => {
-            const id = button.dataset.id;
-
-            if (!confirm("Are you sure you want to delete this scholarship?")) return;
-
-            try {
-                const res = await fetch(`/api/admin/scholarships/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Accept': 'application/json'
-                        // Add 'Authorization' here if needed
-                    }
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    alert(data.message);
-                    const row = document.getElementById(`scholarship-row-${id}`);
-                    if (row) row.remove();
-                } else {
-                    alert(data.message || "Failed to delete scholarship.");
-                }
-            } catch (err) {
-                console.error(err);
-                alert("Something went wrong while deleting.");
-            }
-        });
-    });
-});
