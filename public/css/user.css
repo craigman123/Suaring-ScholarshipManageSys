@@ -131,6 +131,11 @@ tr:nth-child(even) {
     margin-right: 5px;
 }
 
+.action-btns {
+    display: flex;
+    justify-content: center;
+}
+
 .edit-user-btn:hover {
     background-color: #3529d7;
 }
@@ -340,6 +345,7 @@ button:hover {
     font-size: 14px;
     transition: background-color 0.2s;
     opacity: 0.5;
+    margin-left: 5px;
 }
 
 .disabledBtn:hover {

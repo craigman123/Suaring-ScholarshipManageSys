@@ -11,6 +11,10 @@ class Requirements extends Model
 
     protected $fillable = ['scholarship_id', 'requirements'];
 
+    protected $casts = [
+        'requirements' => 'array', 
+    ];
+
     public function scholarship()
     {
         return $this->belongsTo(Scholarship::class);

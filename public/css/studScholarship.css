@@ -78,8 +78,8 @@
     text-align: center;
     cursor: pointer;
     position: fixed;
-    right: 20px;
-    bottom: 750px;
+    right: 1vh;
+    bottom: 80vh;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     transition: background-color 0.2s, transform 0.2s;
     z-index: 1000;
@@ -91,7 +91,7 @@
 }
 
 .back-to-top svg {
-    pointer-events: none; /* Ensures click goes to div, not SVG */
+    pointer-events: none;
 }
 
 .image-wrapper {

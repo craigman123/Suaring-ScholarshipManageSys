@@ -39,7 +39,7 @@ Route::prefix('admin')->group(function () {
     Route::delete('/users/{id}', [UserController::class, 'userDestroy']);
     
     Route::get('/logs', [LogController::class, 'index']);
-    Route::get('/logs/search?user_id={user_id}', [LogController::class, 'index']);
+    Route::get('/logs/search?user_id={user_id}', [LogController::class, 'getLogSearch']);
 });
 
 Route::get('/debug-user', function () {

@@ -10,16 +10,12 @@ class Scholarship extends Model
     use HasFactory;
 
     protected $fillable = [
-        'image_path', 'title', 'description', 'deadline', 'status'
-    ];
-
-    protected $casts = [
-        'requirements' => 'array',
+        'image_path', 'title', 'description', 'deadline', 'status', 'requirements'
     ];
 
     public function requirement()
     {
-        return $this->hasOne(Requirements::class);
+        return $this->hasOne(Requirements::class, 'scholarship_id');
     }
 
     public function applications()

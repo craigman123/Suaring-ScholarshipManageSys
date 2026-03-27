@@ -117,7 +117,8 @@
                     @endif
                 </td>
 
-                <td>
+                <td class="action-btns">
+                    @if(auth()->id() !== $user->id)
                     <button type="button" class="edit-user-btn"
                         data-id="{{ $user->id }}"
                         data-first_name="{{ $user->first_name }}"
@@ -125,8 +126,11 @@
                         data-email="{{ $user->email }}"
                         data-role="{{ $user->role_id }}" 
                         data-status="{{ $user->user_status_id }}"> 
-                    Edit
-                </button>
+                        Edit
+                    </button>
+                    @else
+                        <button type="button" class="disabledBtn" disabled title="Cannot edit logged in account">Edit</button>  
+                    @endif
 
                     @if(auth()->id() !== $user->id)
                         <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure you want to delete this user?');">

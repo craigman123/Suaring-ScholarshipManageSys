@@ -148,7 +148,7 @@ tr:nth-child(even) {
     width: 900px;
     position: relative; 
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    height: 70vh;
+    height: 60vh;
 }
 
 .modal-content form {
@@ -212,6 +212,11 @@ tr:nth-child(even) {
     margin-bottom: 5px;
     border-radius: 5px;
     border: 1px solid #ccc;
+}
+
+.modal-content .form-control {
+    overflow-y: auto;
+    height: 50vh;
 }
 
 .modal-content form textarea {

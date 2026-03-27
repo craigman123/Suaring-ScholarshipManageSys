@@ -20,41 +20,51 @@ class ApplyScholarshipsController extends Controller
 
     public function ScholarshipApply(Request $request, Scholarship $scholarship)
     {
-        // Check if already applied
-        $alreadyApplied = $scholarship->applications()->where('user_id', auth()->id())->exists();
+        // 1️⃣ Check if already applied
+        $alreadyApplied = $scholarship->applications()
+            ->where('user_id', auth()->id())
+            ->exists();
+
         if ($alreadyApplied) {
             return redirect()->route('student.scholarships.view', $scholarship->id)
                 ->with('error', 'You have already applied for this scholarship.');
         }
 
-        // Validate essay (optional)
+        // 2️⃣ Validate
         $request->validate([
-            'essay' => 'nullable|string|max:2000',
-            'requirements.*' => 'required|file|mimes:pdf,jpg,png|max:5120', // max 5MB per file
+            'essay' => 'nullable|string',
+            'requirements' => 'required|array',
+            'requirements.*' => 'required|file|mimes:pdf,jpg,png|max:2048',
         ]);
 
-        // Store application
+        dd($request->all());
+
+        // 3️⃣ Create main application
         $application = $scholarship->applications()->create([
             'user_id' => auth()->id(),
-            'essay' => $request->essay,
             'status' => 'pending',
         ]);
 
-        // Store each requirement file
-        if($request->hasFile('requirements')){
-            foreach($request->file('requirements') as $index => $file){
-                $filename = time().'_'.$file->getClientOriginalName();
-                $file->storeAs('applications/'.$application->id, $filename, 'public');
+        dd($application);
 
-                // Save file record if you have a related table
-                $application->files()->create([
-                    'requirement_name' => $scholarship->requirements[$index],
-                    'filename' => $filename,
-                    'path' => 'applications/'.$application->id.'/'.$filename,
+        // 4️⃣ Store files + essays in application_requirements
+        if ($request->hasFile('requirements')) {
+            foreach ($request->file('requirements') as $index => $file) {
+
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('applications/' . $application->id, $filename, 'public');
+
+                // Save to application_requirements table
+                \App\Models\ApplicationRequirement::create([
+                    'application_id' => $application->id,
+                    'essay' => $request->essay ?? null,  // if you want same essay for all, or you can use $request->essay[$index] for per-file essays
+                    'file_path' => $path,
+                    'passed' => false,
                 ]);
             }
         }
 
+        // 5️⃣ Redirect
         return redirect()->route('student.scholarships.view', $scholarship->id)
             ->with('success', 'Application submitted successfully!');
     }

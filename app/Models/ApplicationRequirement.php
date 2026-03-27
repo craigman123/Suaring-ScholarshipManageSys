@@ -11,7 +11,7 @@ class ApplicationRequirement extends Model
 
     protected $fillable = [
         'application_id',
-        'requirement_name',
+        'essay',
         'file_path',
         'passed',
     ];

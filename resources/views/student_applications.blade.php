@@ -67,9 +67,8 @@
                         {{ ucfirst($app->status) }}
                     </p>
                     <p>Submitted: {{ $app->created_at->format('M d, Y') }}</p>
-
-                    <!-- Optional: View Details Button -->
-                    <a href="{{ route('student.application.show', $app->id) }}" style="display:inline-block; padding:0.3rem 0.7rem; background:#007bff; color:white; border-radius:4px; text-decoration:none; font-size:0.9rem; margin-top:0.5rem;">
+                    
+                    <a href="{{ route('student.application.view', $app->id) }}" style="display:inline-block; padding:0.3rem 0.7rem; background:#007bff; color:white; border-radius:4px; text-decoration:none; font-size:0.9rem; margin-top:0.5rem;">
                         View Details
                     </a>
                 </div>

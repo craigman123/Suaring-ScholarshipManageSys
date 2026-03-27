@@ -42,12 +42,13 @@ Route::get('/studentdash', [StudentController::class, 'dashboard'])
 
 Route::middleware(['auth'])->group(function() {
     Route::get('/admindash', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/scholarships/{id}', [ScholarshipController::class, 'show'])->name('scholarships.show');
 
     Route::get('/admin/scholarships', [ScholarshipController::class, 'AdminwebIndex'])
     ->name('admin.scholarships');
     Route::post('/admin/scholarships/store', [ScholarshipController::class, 'AdminwebStore'])
     ->name('admin.scholarships.store');
-    Route::put('/admin/scholarships/{id}', [ScholarshipController::class, 'webUpdate'])
+    Route::put('/admin/scholarships/{scholarship}', [ScholarshipController::class, 'webUpdate'])
     ->name('admin.scholarships.update');    
     Route::delete('/admin/scholarships/{id}', [ScholarshipController::class, 'webDestroy'])
     ->name('admin.scholarships.destroy');
@@ -68,16 +69,18 @@ Route::middleware(['auth'])->group(function() {
 });
 
 Route::middleware(['auth'])->group(function () {
+        Route::prefix('student')->name('student.')->group(function () {
+            Route::get('/student/logout', [StudentController::class, 'logout'])->name('logout');
+        Route::get('/studentdash', [StudentController::class, 'dashboard'])->name('dashboard');
 
-    Route::get('/student/logout', [StudentController::class, 'logout'])->name('student.logout');
-    Route::get('/studentdash', [StudentController::class, 'dashboard'])->name('student.dashboard');
+        Route::get('/student/applications', [ApplicationsController::class, 'index'])
+            ->name('applications');
 
-    Route::get('/student/applications', [ApplicationsController::class, 'index'])
-        ->name('student.applications');
-
-    Route::prefix('student')->name('student.')->group(function () {
         Route::get('scholarships', [StudentScholarshipController::class, 'index'])
             ->name('scholarships');
+
+        Route::get('applications', [ApplyScholarshipsController::class, 'index'])
+            ->name('application.view');
     
         Route::get('applications/create/{scholarship}', [ApplyScholarshipsController::class, 'create'])
         ->name('scholarships.view');

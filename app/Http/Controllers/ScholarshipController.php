@@ -27,7 +27,16 @@ class ScholarshipController extends Controller
         return response()->json($scholarships);
     }
 
+    public function show($id)
+    {
+        $scholarship = Scholarship::with('requirement')->find($id);
 
+        if (!$scholarship) {
+            abort(404, 'Scholarship not found');
+        }
+
+        return view('scholarships', compact('scholarship'));
+    }
 
     
     public function AdminwebIndex()
@@ -253,50 +262,57 @@ class ScholarshipController extends Controller
         ]);
     }
 
-    public function webUpdate(Request $request, Scholarship $id)
-    {
-        
-        $request->validate([
-            'poster' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'deadline' => 'required|date',
-            'requirement' => 'nullable|string',
-            'status' => 'required|string',
-        ]);
+   public function webUpdate(Request $request, Scholarship $scholarship)
+{
+    // 1️⃣ Validate the request
+    $request->validate([
+        'poster' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'deadline' => 'required|date',
+        'requirement' => 'nullable|string',
+        'status' => 'required|string',
+    ]);
 
-        if ($request->hasFile('poster')) {
-            $posterPath = $request->file('poster')->store('posters', 'public');
-            $id->image_path = $posterPath;
-        }
-
-        $id->update([
-            'title' => $request->title,
-            'description' => $request->description,
-            'deadline' => $request->deadline,
-            'status' => $request->status,
-        ]);
-
-        if ($id->requirement) {
-            $id->requirement->update([
-                'requirements' => $request->requirement ? json_encode(array_filter(array_map('trim', explode("\n", $request->requirement)))) : json_encode([]),
-            ]);
-        } else {
-            $id->requirement()->create([
-                'requirements' => $request->requirement ? json_encode(array_filter(array_map('trim', explode("\n", $request->requirement)))) : json_encode([]),
-            ]);
-        }
-
-        try {
-            $id->update();
-        } catch (\Exception $e) {
-            LogHelper::error("ERROR UPDATING SCHOLARSHIP", "Error updating scholarship: " . $e->getMessage(), auth()->user());
-            return redirect()->back()->with('error', 'Error updating scholarship: ' . $e->getMessage());
-        }
-
-        LogHelper::log("UPDATED SCHOLARSHIP", "Successfully updated scholarship", auth()->user());
-        return redirect()->back()->with('success', 'Scholarship updated successfully!');
+    // 2️⃣ Handle poster upload
+    if ($request->hasFile('poster')) {
+        $posterPath = $request->file('poster')->store('posters', 'public');
+        $scholarship->image_path = $posterPath;
     }
+
+    // 3️⃣ Update scholarship fields
+    $scholarship->update([
+        'title' => $request->title,
+        'description' => $request->description,
+        'deadline' => $request->deadline,
+        'status' => $request->status,
+    ]);
+
+    // 4️⃣ Prepare requirements array
+    $requirementsArray = $request->requirement
+    ? array_filter(array_map('trim', explode("\n", $request->requirement)))
+    : [];
+
+    // 5️⃣ Update existing requirement or create new
+    if ($scholarship->requirement) {
+        // Update existing requirement row
+        $scholarship->requirement->update([
+            'requirements' => $requirementsArray
+        ]);
+    } else {
+        // Create new requirement row with explicit scholarship_id
+        $requirement = new Requirements();
+        $requirement->scholarship_id = $scholarships->id;
+        $requirement->requirements = $requirementsArray;
+        $requirement->save();
+    }
+
+    // 6️⃣ Optional: log the update
+    LogHelper::log("UPDATED SCHOLARSHIP", "Successfully updated scholarship", auth()->user());
+
+    // 7️⃣ Redirect back with success message
+    return redirect()->back()->with('success', 'Scholarship updated successfully!');
+}
 
     public function destroy($id)
     {

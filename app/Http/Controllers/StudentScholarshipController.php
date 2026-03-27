@@ -11,7 +11,7 @@ class StudentScholarshipController extends Controller
 {
     public function index()
     {
-        $scholarships = Scholarship::with('applications')->latest()->get();
+        $scholarships = Scholarship::where('status', 'approved')->get();
         $totalScholarships = $scholarships->count(); 
         
         $scholarship = $scholarships->first();
@@ -63,5 +63,29 @@ class StudentScholarshipController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/')->with('message', 'Logged out successfully!');
+    }
+
+    public function apply(Request $request, Scholarship $scholarship)
+    {
+        $request->validate([
+            'essay' => 'required|string',
+            'requirements.*' => 'required|file|mimes:jpg,jpeg,png,pdf',
+        ]);
+
+        // Handle saving files
+        foreach ($request->file('requirements', []) as $file) {
+            $path = $file->store('requirements', 'public');
+            // Save $path in DB if needed
+        }
+
+        Application::create([
+            'user_id' => auth()->id(),
+            'scholarship_id' => $scholarship->id,
+            'essay' => $request->essay,
+            'status' => 'pending',
+        ]);
+
+        return redirect()->route('student.scholarships.index')
+                        ->with('success', 'Application submitted successfully!');
     }
 }

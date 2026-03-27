@@ -4,50 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ asset('css/application.css') }}">
+    <script src="{{ asset('js/application.js') }}"></script>
     <title>Application Page</title>
 </head>
 <body>
-<div class="application-page max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+    <div class="poster-page">
+    <a href="{{ route('student.scholarships')}}" class="back-btn">
+        <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
+        fill="currentColor" viewBox="0 0 24 24" >
+        <path d="M11.79 6.29 6.09 12l5.7 5.71 1.42-1.42L9.91 13H18v-2H9.91l3.3-3.29z"></path>
+        </svg>
+    </a>
 
-    <!-- Scholarship Header -->
-    <h1 class="text-2xl font-bold mb-2">{{ $scholarship->title }}</h1>
-    <p class="text-gray-600 mb-4">Deadline: {{ \Carbon\Carbon::parse($scholarship->deadline)->format('F j, Y') }}</p>
+        <div class="image-container" style="position: relative;">
+            <img src="{{ asset('storage/' . $scholarship->image_path) }}" 
+                alt="Scholarship Image" 
+                class="scholarship-image" 
+                style="width:100%; border-radius:8px;">
 
-    <!-- Flash Messages -->
-    @if(session('success'))
-        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">{{ session('success') }}</div>
-    @endif
-    @if(session('error'))
-        <div class="bg-red-100 text-red-800 p-3 rounded mb-4">{{ session('error') }}</div>
-    @endif
+            @php
+                $daysLeft = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($scholarship->deadline), false);
+            @endphp
 
-    <!-- Dynamic Application Form -->
-    <form action="{{ route('student.scholarships.apply', $scholarship->id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-        @csrf
-
-        <!-- Optional Essay -->
-        <div>
-            <label for="essay" class="block font-medium mb-1">Why should you get this scholarship?</label>
-            <textarea name="essay" id="essay" rows="5" class="w-full border rounded p-2"></textarea>
+            @if($daysLeft < 0)
+                <span class="badge closed">Closed</span>
+            @elseif($daysLeft <= 3)
+                <span class="badge urgent">🔥 Soon</span>
+            @elseif($daysLeft <= 7)
+                <span class="badge warning">⚠️ Few Days</span>
+            @else
+                <span class="badge open">Open</span>
+            @endif
         </div>
 
-        <!-- Loop through dynamic requirements -->
-        <div>
-            <h2 class="text-xl font-semibold mb-2">Upload Scholarship Requirements:</h2>
-            @foreach($scholarship->requirements as $index => $requirement)
-                <div class="mb-3">
-                    <label class="block font-medium mb-1">{{ $requirement }}:</label>
-                    <input type="file" name="requirements[{{ $index }}]" accept=".pdf,.jpg,.png" required class="w-full">
-                    <small class="text-gray-500">Upload the {{ $requirement }} as a PDF or image.</small>
+            <h1>{{ $scholarship->title }}</h1>
+            <p style="font-weight: bold;">Deadline: {{ \Carbon\Carbon::parse($scholarship->deadline)->format('F j, Y') }}</p>
+        </div>
+
+    <div class="description">
+        <h2>Scholarship Overview:</h2>
+        <p style="font-weight: bold;">{{ $scholarship->description }}</p>
+    </div>
+
+    <div class="requirements">
+        <h2>Requirements:</h2>
+        <ul>
+            @forelse($scholarship->requirement->requirements ?? [] as $req)
+                <li>{{ $req }}</li>
+            @empty
+                <li>No requirements listed.</li>
+            @endforelse
+        </ul>
+    </div>
+
+    <div class="application-page">
+    
+        <div class="application-form">
+
+            @if(session('success'))
+                <div style="background-color: #d1fae5; color: #065f46; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                    {{ session('success') }}
                 </div>
-            @endforeach
-        </div>
+            @endif
+            @if(session('error'))
+                <div style="background-color: #fee2e2; color: #991b1b; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                    {{ session('error') }}
+                </div>
+            @endif
 
-        <!-- Submit -->
-        <button type="submit" class="bg-blue-600 text-white font-bold px-6 py-2 rounded hover:bg-blue-700">
-            Submit Application
-        </button>
-    </form>
-</div>
+            <form action="{{ route('student.scholarships.apply', $scholarship->id) }}" 
+                method="POST" 
+                enctype="multipart/form-data">
+
+                @csrf
+
+                <div style="margin-bottom: 10px;">
+                    <label style="font-weight: bold;" for="essay" placeholder="Intentions . . .">What is your intention to apply for this scholarship?</label>
+                    <textarea name="essay" id="essay" rows="5" style="width:100%; padding:5px;"></textarea>
+                </div>
+
+                <div style="margin-bottom: 10px;">
+                    <h2>Upload Requirements:</h2>
+
+                    @foreach($scholarship->requirements ?? [] as $requirement)
+                        <div style="margin-bottom: 8px;">
+                            <label>{{ $requirement }}</label><br>
+                            <input type="file"
+                                name="requirements[]"
+                                class="requirement-input"
+                                accept="image/*"
+                                required>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- ✅ Add Requirement Button -->
+                <button class="add-requirement-btn" type="button" id="addRequirementBtn">
+                    + Add Requirement
+                </button>
+
+                <!-- ✅ Image Previewer -->
+                <div class="requirement-files" style="margin-bottom: 15px;">
+                    <div id="previewContainer" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
+                </div>
+
+                <!-- ✅ Submit Button -->
+                <button class="submit-btn" type="submit">
+                    Submit Application
+                </button>
+
+                <div class="notify-container">
+                </div>
+            </form>
+
+        </div>
+    </div>
 </body>
 </html>

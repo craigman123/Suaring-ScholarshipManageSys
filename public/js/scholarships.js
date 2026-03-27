@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function openEditModal(scholarshipId) {
     const btn = document.querySelector(`.edit-btn[data-id='${scholarshipId}']`);
-
+    
     const modal = document.getElementById('editScholarshipModal');
     modal.style.display = 'block';
 
@@ -85,7 +85,19 @@ window.addEventListener('DOMContentLoaded', () => {
             if (statusSelect) {
                 statusSelect.value = button.dataset.status; 
             }
-            document.getElementById('scholarshipRequirement').value = button.dataset.requirement || '';
+
+            console.log(
+                button.dataset.id,
+                button.dataset.title,
+                button.dataset.description,
+                button.dataset.deadline,
+                button.dataset.status
+            );
+
+            const reqString = button.dataset.requirement || '';
+            document.getElementById('scholarshipRequirement').value = reqString.split('|').join('\n');
+
+            console.log(reqString);
 
             setPosterPreview(button.dataset.poster || null);
 

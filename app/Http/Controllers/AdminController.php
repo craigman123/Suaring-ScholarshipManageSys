@@ -57,7 +57,7 @@ class AdminController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        LogHelper::log("LOGOUT", "Account Logge Out", auth()->user());
+        LogHelper::log("LOGOUT", "Account Logged Out", auth()->user());
         return redirect('/')->with('message', 'Logged out successfully!');
     }
 }

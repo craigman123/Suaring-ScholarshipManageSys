@@ -3,6 +3,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Reports - Admin Panel</title>
+    <link href="{{ asset('css/reports.css') }}" rel="stylesheet" />
     <link href="{{ asset('css/adminDash.css') }}" rel="stylesheet" />
 </head>
 <body>
@@ -35,7 +36,7 @@
 
         <section class="recent-activity">
             <h2>Activity Logs</h2>
-            <div class="table-container">
+            <div class="table-container-reports">
                 <table>
                     <thead>
                         <tr>
