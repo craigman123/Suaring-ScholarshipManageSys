@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="{{ asset('css/studDash.css') }}" rel="stylesheet">
@@ -53,7 +54,7 @@
         <!-- Scholarships as Cards -->
         <section class="scholarship-cards" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:1.5rem; margin-top:1.5rem;">
             @forelse($applications as $app)
-                <div class="scholarship-card" style="background:#fff; border-radius:8px; padding:1rem; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+                <div class="scholarship-card" id="app-{{ $app->id }}" style="background:#fff; border-radius:8px; padding:1rem; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
                     <!-- Scholarship Picture -->
                     @if($app->scholarship->image_path)
                         <img src="{{ asset('storage/' . $app->scholarship->image_path) }}" alt="{{ $app->scholarship->title }}" style="width:100%; height:150px; object-fit:cover; border-radius:6px;">
@@ -71,6 +72,9 @@
                     <a href="{{ route('student.application.view', $app->id) }}" style="display:inline-block; padding:0.3rem 0.7rem; background:#007bff; color:white; border-radius:4px; text-decoration:none; font-size:0.9rem; margin-top:0.5rem;">
                         View Details
                     </a>
+                    <button class="delete-btn" data-id="{{ $app->id }}" style="display:inline-block; padding:0.3rem 0.7rem; background:#dc3545; color:white; border-radius:4px; border:none; font-size:0.9rem; margin-top:0.5rem;">
+                        Delete
+                    </button>
                 </div>
             @empty
                 <p>You have not applied for any scholarships yet.</p>

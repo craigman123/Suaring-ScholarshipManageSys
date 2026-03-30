@@ -12,13 +12,15 @@ class ScholarshipController extends Controller
 {   
     public function getScholarship($id)
     {
-        $user = Scholarship::find($id);
+        $scholarship = Scholarship::with('requirement')->find($id);
 
-        if (!$user) {
-            return response()->json(['message' => 'Scholarship not found'], 404);
+        if (!$scholarship) {
+            return response()->json([
+                'message' => 'Scholarship not found'
+            ], 404);
         }
 
-        return response()->json($user);
+        return response()->json($scholarship);
     }
 
     public function getScholarships()
@@ -83,20 +85,25 @@ class ScholarshipController extends Controller
             'description' => 'required|string',
             'deadline' => 'required|date',
             'status' => 'required|string',
-            'requirement' => 'nullable|string', 
+            'requirement' => 'nullable|string',
         ]);
 
+        // Prevent wrong field
         if ($request->has('requirements')) {
-            LogHelper::log("ERROR", "Field 'requirements' does not exist. Do you mean 'requirement' instead?", auth()->user());
+
+            LogHelper::log("ERROR", "Field 'requirements' does not exist. Use 'requirement'.", auth()->user());
+
             return response()->json([
-                'message' => "Field 'requirements' does not exist. Do you mean 'requirement' instead?"
+                'message' => "Field 'requirements' does not exist. Use 'requirement'."
             ], 422);
         }
 
+        // Upload image
         $posterPath = $request->hasFile('poster') 
             ? $request->file('poster')->store('posters', 'public') 
             : null;
 
+        // Create scholarship
         $scholarship = \App\Models\Scholarship::create([
             'image_path' => $posterPath,
             'title' => $request->title,
@@ -105,28 +112,23 @@ class ScholarshipController extends Controller
             'status' => $request->status,
         ]);
 
-        try {
-            $requirementsArray = array_filter(array_map('trim', explode("\n", $request->requirement)));
-        } catch (\Exception $e) {
-            LogHelper::error("ERROR CREATING SCHOLARSHIP", "Error creating scholarship", auth()->user());
-            $requirementsArray = ["none"];
-            return response()->json([
-                'message' => 'Something went wrong while creating scholarship.'
-            ], 500);
+        // Convert textarea → array
+        if ($request->filled('requirement')) {
+            $requirementsArray = array_filter(
+                array_map('trim', explode("\n", $request->requirement))
+            );
+        } else {
+            $requirementsArray = [];
         }
 
-        if ($request->requirement) {
-                $requirementsArray = array_filter(array_map('trim', explode("\n", $request->requirement)));
-            } else {
-                $requirementsArray = ["none"];
-            }
+        // Store as array (Laravel handles JSON)
+        Requirements::create([
+            'scholarship_id' => $scholarship->id,
+            'requirements' => json_encode($requirementsArray),
+        ]);
 
-            Requirements::create([
-                'scholarship_id' => $scholarship->id,
-                'requirements' => json_encode($requirementsArray),
-            ]);
+        LogHelper::log("INFO", "Scholarship added successfully!", auth()->user());
 
-        LogHelper::log("CREATED SCHOLARSHIP", "Successfully created scholarship", auth()->user());
         return response()->json([
             'message' => 'Scholarship added successfully!',
             'data' => $scholarship

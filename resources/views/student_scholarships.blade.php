@@ -65,15 +65,18 @@
                             $daysLeft = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($scholarship->deadline), false);
                         @endphp
 
-                        @if($daysLeft < 0)
-                            <span class="badge closed">Closed</span>
+                        @if($appliedScholarships->contains($scholarship->id))
+                            <span class="badge applied">👑 Applied</span>
+                        @elseif($daysLeft < 0)
+                            <span class="badge closed">❌ Closed</span>
                         @elseif($daysLeft <= 3)
                             <span class="badge urgent">🔥 Soon</span>
                         @elseif($daysLeft <= 7)
                             <span class="badge warning">⚠️ Few Days</span>
                         @else
-                            <span class="badge open">Open</span>
+                            <span class="badge open">✅ Open</span>
                         @endif
+
                     </div>
                     <h3>{{ $scholarship->title }}</h3>
                     <p>{{ Str::limit($scholarship->description, 100) }}</p>
@@ -82,11 +85,17 @@
                    @php
                         $daysLeft = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($scholarship->deadline), false);
                         $isClosed = $daysLeft < 0;
+                        $hasApplied = $appliedScholarships->contains($scholarship->id);
                     @endphp
 
                     @if($isClosed)
                         <span class="apply-btn disabled" title="Application deadline has passed">
                             Closed
+                        </span>
+
+                    @elseif($hasApplied)
+                        <span class="apply-btn apply" title="You have already applied">
+                            Already Applied
                         </span>
                     @else
                         <a href="{{ route('student.scholarships.view', $scholarship->id) }}"

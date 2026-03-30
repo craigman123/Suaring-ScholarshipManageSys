@@ -34,7 +34,7 @@ class StudentController extends Controller
         return view('student_scholarships', compact('scholarships'));
     }
 
-    public function profile(Request $request)
+    public function StudentProfile(Request $request)
     {
         $user = $request->user();
         return view('student_profile', compact('user'));

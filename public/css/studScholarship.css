@@ -65,6 +65,22 @@
     cursor: not-allowed;
 }
 
+/* Disabled button */
+.apply-btn.disabled:hover {
+    background-color: #ff8383;
+    cursor: not-allowed;
+}
+
+.apply-btn.apply {
+    background-color: #a1a1a1;
+    cursor: default;
+}
+
+.apply-btn.apply:hover {
+    background-color: #ff8a8a;
+    cursor: not-allowed;
+}
+
 .back-to-top {
     width: 80px;
     height: 80px;
@@ -165,6 +181,11 @@
     background: #ffc107;
     color: #000;
     animation: glow 1.5s infinite;
+}
+
+.applied {
+    background: #007bff;
+    animation: pulseGlow 2s infinite;
 }
 
 @keyframes greenGlow {

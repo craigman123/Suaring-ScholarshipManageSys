@@ -13,13 +13,9 @@ class StudentScholarshipController extends Controller
     {
         $scholarships = Scholarship::where('status', 'approved')->get();
         $totalScholarships = $scholarships->count(); 
-        
-        $scholarship = $scholarships->first();
-        if ($scholarship->deadline < now()) {
-            abort(403, 'Application closed');
-        }
+        $appliedScholarships = Application::where('user_id', Auth::id())->pluck('scholarship_id');
 
-        return view('student_scholarships', compact('scholarships', 'totalScholarships'));
+        return view('student_scholarships', compact('scholarships', 'totalScholarships', 'appliedScholarships'));
     }
 
     public function ScholarshipApply(Scholarship $scholarship)
@@ -50,7 +46,7 @@ class StudentScholarshipController extends Controller
         return view('student_applications', compact('scholarships'));
     }
 
-    public function profile(Request $request)
+    public function StudentProfile(Request $request)
     {
         $user = $request->user();
         return view('student_profile', compact('user'));
@@ -67,25 +63,51 @@ class StudentScholarshipController extends Controller
 
     public function apply(Request $request, Scholarship $scholarship)
     {
-        $request->validate([
+    try {
+        $validated = $request->validate([
             'essay' => 'required|string',
             'requirements.*' => 'required|file|mimes:jpg,jpeg,png,pdf',
         ]);
 
-        // Handle saving files
-        foreach ($request->file('requirements', []) as $file) {
-            $path = $file->store('requirements', 'public');
-            // Save $path in DB if needed
+        $filePaths = [];
+
+        if ($request->hasFile('requirements')) {
+            foreach ($request->file('requirements') as $file) {
+                $path = $file->store('requirements', 'public');
+                $filePaths[] = $path;
+            }
         }
 
-        Application::create([
-            'user_id' => auth()->id(),
+        // Create application
+        $application = Application::create([
+            'user_id' => Auth::id(),
             'scholarship_id' => $scholarship->id,
-            'essay' => $request->essay,
+            'essay' => $validated['essay'],
             'status' => 'pending',
         ]);
 
-        return redirect()->route('student.scholarships.index')
-                        ->with('success', 'Application submitted successfully!');
+        // OPTIONAL: store file paths in another table
+        foreach ($filePaths as $path) {
+            $application->files()->create([
+                'file_path' => $path
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Application submitted successfully',
+            'data' => $application
+        ], 201);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'message' => 'Validation error',
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Something went wrong',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 }

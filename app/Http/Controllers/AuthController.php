@@ -41,13 +41,18 @@ class AuthController extends Controller
                 'last_name' => $validated['last_name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
-                'role_id' => 3,        
-                'user_status_id' => 1, 
+                'role_id' => 3, 
+                'user_status_id' => 1,
             ]);
 
-            LogHelper::log("REGISTRATION", "Account Succesfully Registered", auth()->user());
+            $token = $user->createToken('api-token')->plainTextToken;
 
-            return response()->json(['status' => 'success', 'user' => $user], 201);
+            return response()->json([
+                'status' => 'success',
+                'user' => $user,
+                'token' => $token
+            ], 201);
+
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -144,6 +149,25 @@ class AuthController extends Controller
 
         LogHelper::log("LOGOUT", "Account Logge Out", auth()->user());
         return redirect('/')->with('message', 'User logged out succesfully!');
+    }
+
+    public function Apilogout(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
+
+        LogHelper::log("LOGOUT", "Account Logged Out", $user);
+
+        $user->tokens()->delete();
+
+        return response()->json([
+            'message' => 'Logged out successfully'
+        ], 200);
     }
 
     

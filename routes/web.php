@@ -5,6 +5,7 @@ use App\Http\Controllers\ApplicationsController;
 use App\Http\Controllers\ApplyScholarshipsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScholarshipController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentScholarshipController;
@@ -83,12 +84,22 @@ Route::middleware(['auth'])->group(function () {
             ->name('application.view');
     
         Route::get('applications/create/{scholarship}', [ApplyScholarshipsController::class, 'create'])
-        ->name('scholarships.view');
+            ->name('scholarships.view');
         Route::post('applications/apply/{scholarship}', [ApplyScholarshipsController::class, 'ScholarshipApply'])
             ->name('scholarships.apply');
+        Route::delete('application/{id}', [ApplyScholarshipsController::class, 'ScholarshipDestroy'])
+            ->name('application.delete');
         
     });
-    
-    Route::get('/student/profile', [StudentController::class, 'StudentProfile'])
+    Route::get('/student/profile', [ProfileController::class, 'StudentProfile'])
         ->name('student.profile');
+    Route::get('/student/profile', [ProfileController::class, 'index'])
+        ->name('student.profile');
+
+    Route::post('/student/profile', [ProfileController::class, 'store'])
+        ->name('student.profile.store');
+    Route::post('/student/profile/update', [ProfileController::class, 'store'])
+        ->name('student.profile.update');
+
+    
 });

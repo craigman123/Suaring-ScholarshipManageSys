@@ -1,108 +1,76 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    const previewContainer = document.getElementById('previewContainer');
-    const addBtn = document.getElementById('addRequirementBtn');
+    // Preview function for one image per requirement
+    function showPreview(input) {
+        const file = input.files[0];
+        if (!file || !file.type.startsWith('image/')) return;
 
-    let extraIndex = 1000;
+        const index = input.id.split('_')[1];
+        const previewContainer = document.getElementById(`preview_${index}`);
+        previewContainer.innerHTML = ''; // clear previous preview
 
-    // ✅ Preview EXISTING inputs
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.display = 'inline-block';
+
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.style.width = '150px';
+        img.style.height = '150px';
+        img.style.objectFit = 'cover';
+        img.style.border = '1px solid #ccc';
+        img.style.borderRadius = '8px';
+
+        // Remove button
+        const removeBtn = document.createElement('button');
+        removeBtn.innerHTML = '✕';
+        removeBtn.style.position = 'absolute';
+        removeBtn.style.top = '0';
+        removeBtn.style.right = '0';
+        removeBtn.style.width = '25px';
+        removeBtn.style.height = '25px';
+        removeBtn.style.background = 'red';
+        removeBtn.style.color = 'white';
+        removeBtn.style.border = 'none';
+        removeBtn.style.borderRadius = '50%';
+        removeBtn.style.cursor = 'pointer';
+        removeBtn.onclick = function () {
+            wrapper.remove();
+            input.value = ''; // clear the file input
+            document.getElementById(`fileName_${index}`).textContent = 'No file chosen';
+        };
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(removeBtn);
+        previewContainer.appendChild(wrapper);
+
+        // Update file name
+        document.getElementById(`fileName_${index}`).textContent = file.name;
+        document.getElementById(`error_${index}`).style.display = 'none';
+    }
+
+    // Attach change event to all inputs
     document.querySelectorAll('.requirement-input').forEach(input => {
         input.addEventListener('change', function () {
             showPreview(input);
         });
     });
 
-    // ✅ Add Requirement (auto open file picker)
-    addBtn.addEventListener('click', function () {
-
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.name = `requirements[${extraIndex}]`;
-        input.accept = 'image/*';
-        input.style.display = 'none';
-
-        document.body.appendChild(input);
-
-        input.click();
-
-        input.addEventListener('change', function () {
-            if (input.files.length > 0) {
-                showPreview(input);
-                extraIndex++;
+    // Form validation: ensure all required images are selected
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        let valid = true;
+        document.querySelectorAll('.requirement-input[required]').forEach(input => {
+            const index = input.id.split('_')[1];
+            if (!input.files.length) {
+                document.getElementById(`error_${index}`).style.display = 'inline';
+                valid = false;
             }
         });
-    });
 
-    // ✅ Preview function
-    function showPreview(input) {
-        const file = input.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-            const wrapper = document.createElement('div');
-            wrapper.style.position = 'relative';
-
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            img.style.width = '255px';
-            img.style.height = '255px';
-            img.style.objectFit = 'cover';
-            img.style.borderRadius = '8px';
-            img.style.border = '1px solid #ccc';
-
-            // ❌ Remove button
-            const removeBtn = document.createElement('button');
-            removeBtn.innerHTML = ' <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24" ><path d="M17 6V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H2v2h2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8h2V6zM9 4h6v2H9zm9 16H6V8h12z"></path><path d="M14.29 10.29 12 12.59l-2.29-2.3-1.42 1.42 2.3 2.29-2.3 2.29 1.42 1.42 2.29-2.3 2.29 2.3 1.42-1.42-2.3-2.29 2.3-2.29z"></path></svg> ';
-            removeBtn.style.width = '30px';
-            removeBtn.style.height = '30px';
-            removeBtn.style.position = 'absolute';
-            removeBtn.style.top = '0';
-            removeBtn.style.right = '0';
-            removeBtn.style.background = 'red';
-            removeBtn.style.color = 'white';
-            removeBtn.style.border = 'none';
-            removeBtn.style.cursor = 'pointer';
-
-            removeBtn.onclick = function () {
-                wrapper.remove();
-                input.value = ''; 
-            };
-
-            wrapper.appendChild(img);
-            wrapper.appendChild(removeBtn);
-            previewContainer.appendChild(wrapper);
-        };
-
-        reader.readAsDataURL(file);
-    }
-
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const submitBtn = document.querySelector('.submit-btn');
-    const notifyContainer = document.querySelector('.notify-container');
-
-    function showNotification(message, type = 'error') {
-        const notif = document.createElement('div');
-        notif.classList.add('notify');
-        notif.textContent = message;
-
-        // Add to container
-        notifyContainer.appendChild(notif);
-
-        // Remove after 3 seconds
-        setTimeout(() => {
-            notif.remove();
-        }, 3000);
-    }
-
-    submitBtn.addEventListener('click', (e) => {
-        const fileInput = document.querySelector('input[type="file"]');
-        if (!fileInput || !fileInput.files.length) {
-            e.preventDefault(); // Prevent form submission
-            showNotification("Please add a file before submitting");
+        if (!valid) {
+            e.preventDefault();
+            alert('Please upload all required images before submitting!');
         }
     });
 });
@@ -137,6 +105,47 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = '/student_scholarships'; 
                 }, 1000); 
             }, 100);
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Update file name when a file is chosen
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const index = this.id.split('_')[1];
+            const fileNameSpan = document.getElementById(`fileName_${index}`);
+            const errorSpan = document.getElementById(`error_${index}`);
+            if(this.files.length > 0) {
+                fileNameSpan.textContent = this.files[0].name;
+                errorSpan.style.display = 'none';
+            } else {
+                fileNameSpan.textContent = 'No file chosen';
+            }
+        });
+    });
+
+    // Form submit validation: ensure all files selected
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        let valid = true;
+
+        fileInputs.forEach(input => {
+            const index = input.id.split('_')[1];
+            const errorSpan = document.getElementById(`error_${index}`);
+            if(input.files.length === 0) {
+                errorSpan.style.display = 'block';
+                valid = false;
+            } else {
+                errorSpan.style.display = 'none';
+            }
+        });
+
+        if(!valid) {
+            e.preventDefault(); // prevent submission if any missing
+            alert("Please upload all required files before submitting!");
         }
     });
 });

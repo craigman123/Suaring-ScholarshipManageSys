@@ -1,0 +1,133 @@
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+
+body {
+    display: flex; 
+    min-height: 100vh; 
+    background: #f4f6f8; 
+}
+
+.sidebar {
+    width: 220px;
+    background-color: #1e1e2f;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.sidebar-logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.sidebar-logo img {
+    width: 80px;
+    margin-bottom: 10px;
+}
+
+.sidebar-logo h2 {
+    font-size: 18px;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+}
+
+.sidebar-nav ul li {
+    margin-bottom: 15px;
+}
+
+.sidebar-nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    display: block;
+    padding: 10px 15px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.sidebar-nav ul li a.active,
+.sidebar-nav ul li a:hover {
+    background-color: #3a3a55;
+}
+
+.profile-container {
+    display: grid;
+    grid-template-columns: 0.8fr 2fr;
+    grid-area: 
+    "info achievements"
+    "info achievements"
+    ;
+    width: 85%;
+    margin: 20px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.profile-details {
+    grid-area: info;
+    width: 20vw;
+    background: #c6c6c6;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+
+.achievements-section {
+    grid-area: achievements;
+    background: #c6c6c6;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-left: 20px;
+    width: 20vw;
+    height: 100%;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ddd;
+}
+
+.profile-info h2 {
+    margin: 0;
+}
+
+.profile-info p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.profile-details div {
+    margin-bottom: 15px;
+}
+
+.label {
+    font-weight: bold;
+    color: #333;
+}
+
+.edit-btn {
+    margin-top: 20px;
+    display: inline-block;
+    padding: 10px 20px;
+    background: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.edit-btn:hover {
+    background: #45a049;
+}

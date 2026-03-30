@@ -27,6 +27,7 @@
                 $daysLeft = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($scholarship->deadline), false);
             @endphp
 
+
             @if($daysLeft < 0)
                 <span class="badge closed">Closed</span>
             @elseif($daysLeft <= 3)
@@ -87,26 +88,27 @@
                 <div style="margin-bottom: 10px;">
                     <h2>Upload Requirements:</h2>
 
-                    @foreach($scholarship->requirements ?? [] as $requirement)
-                        <div style="margin-bottom: 8px;">
+                    @foreach($scholarship->requirement->requirements ?? [] as $index => $requirement)
+                        <div class="requirement-wrapper" style="margin-bottom:15px;">
                             <label>{{ $requirement }}</label><br>
+
+                            <!-- Custom file button -->
+                            <label class="file-btn" for="requirement_{{ $index }}">Choose Image</label>
                             <input type="file"
-                                name="requirements[]"
-                                class="requirement-input"
+                                id="requirement_{{ $index }}"
+                                name="requirements[{{ $index }}]"
                                 accept="image/*"
-                                required>
+                                class="requirement-input"
+                                required
+                                style="display:none;">
+
+                            <span class="file-name" id="fileName_{{ $index }}">No file chosen</span>
+                            <span class="error" id="error_{{ $index }}" style="display:none; color:red;">Image is required!</span>
+
+                            <!-- Preview container for this input -->
+                            <div class="preview-container" id="preview_{{ $index }}" style="margin-top:10px;"></div>
                         </div>
                     @endforeach
-                </div>
-
-                <!-- ✅ Add Requirement Button -->
-                <button class="add-requirement-btn" type="button" id="addRequirementBtn">
-                    + Add Requirement
-                </button>
-
-                <!-- ✅ Image Previewer -->
-                <div class="requirement-files" style="margin-bottom: 15px;">
-                    <div id="previewContainer" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
                 </div>
 
                 <!-- ✅ Submit Button -->
