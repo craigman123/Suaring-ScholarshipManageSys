@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('applications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // links to users table
+            $table->string('essay')->required(); 
             $table->foreignId('scholarship_id')->constrained()->onDelete('cascade'); // links to scholarships table
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             

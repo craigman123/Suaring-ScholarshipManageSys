@@ -175,3 +175,103 @@ header p {
     text-decoration: none;
     font-size: 0.9rem;
 }
+
+/* Modal wrapper */
+.modal {
+    display: none; /* hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Show modal */
+.modal.show {
+    display: flex;
+}
+
+/* Overlay */
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.show .modal-overlay {
+    opacity: 1;
+}
+
+/* Modal content */
+.modal-content {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    width: 360px;
+    max-width: 90%;
+    z-index: 10001;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    transform: translateY(-50px) scale(0.95);
+    opacity: 0;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+/* Animate modal content */
+.modal.show .modal-content {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Modal actions */
+.modal-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+/* Buttons */
+.btn-cancel {
+    padding: 0.4rem 0.8rem;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+.btn-cancel:hover {
+    background: #5a6268;
+}
+
+.btn-delete {
+    padding: 0.4rem 0.8rem;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+.btn-delete:hover {
+    background: #c82333;
+}
+
+.delete-btn {
+    padding: 0.4rem 0.8rem;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}

@@ -57,11 +57,33 @@ Route::middleware('auth:sanctum', 'role:3')->group(function () {
     Route::get('/scholarships/{id}', [ScholarshipController::class, 'getScholarship']);
 
     Route::prefix('student')->group(function () {
-        Route::get('/applications', [ApplyScholarshipsController::class, 'getAllApplications']);
-        Route::get('/application/{id}', [ApplyScholarshipsController::class, 'getApplication']);
-        Route::post('/application', [ApplyScholarshipsController::class, 'storeApplication']);
-        Route::put('/application/{id}', [ApplyScholarshipsController::class, 'updateApplication']);
-        Route::delete('/application/{id}', [ApplyScholarshipsController::class, 'destroyApplication']);
+        Route::middleware('auth:sanctum')->get('/applications', [ApplyScholarshipsController::class, 
+            'getAllApplications']);
+        Route::middleware('auth:sanctum')->get('/application/{id}', [ApplyScholarshipsController::class, 
+            'getApplication']);
+        Route::middleware('auth:sanctum')->post('/storeapplication/{scholarship_id}', [ApplyScholarshipsController::class, 
+            'storeApplication']);
+        Route::middleware('auth:sanctum')->put('/updateapplication/{application_id}', [ApplyScholarshipsController::class, 
+            'updateApplication']);
+        Route::middleware('auth:sanctum')->delete('/destroyapplication/{id}', [ApplyScholarshipsController::class, 
+            'destroyApplication']);
+    });
+});
+
+Route::middleware('auth:sanctum', 'role:2')->group(function () {
+    Route::get('/user', [AuthController::class, 'user']);
+
+    Route::get('/scholarships', [ScholarshipController::class, 'getScholarships']);
+
+    Route::prefix('provider')->group(function () {
+        Route::get('/scholarships/{id}', [ScholarshipController::class, 'providerScholarship']);
+
+        Route::middleware('auth:sanctum')->get('/scholarship', [ApplyScholarshipsController::class, 
+            'getAllApplications']);
+        Route::middleware('auth:sanctum')->get('/application/{id}', [ApplyScholarshipsController::class, 
+            'getApplication']);
+        Route::middleware('auth:sanctum')->put('/updateapplication/{application_id}', [ApplyScholarshipsController::class, 
+            'updateApplication']);
     });
 });
 

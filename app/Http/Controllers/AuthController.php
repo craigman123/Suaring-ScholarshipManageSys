@@ -119,6 +119,17 @@ class AuthController extends Controller
         return redirect()->back()->with('error', 'Role not recognized');
     }
 
+    public function webLogout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        LogHelper::log("LOGOUT", "Account Logged Out", auth()->user());
+
+        return redirect('/')->with('message', 'User logged out successfully!');
+    }
+
     public function login(Request $request)
     {
         $request->validate([

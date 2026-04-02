@@ -1,54 +1,56 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="{{ asset('css/scholarship.css') }}" rel="stylesheet">
-    <script src="{{ asset('js/scholarships.js') }}"></script>
-    <title>Add Scholarship</title>
+    <link href="{{ asset('css/studDash.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/adminDash.css') }}" rel="stylesheet">
+    <script src="{{ asset('js/studDash.js') }}"></script>
+    <title>Document</title>
 </head>
 <body>
     <aside class="sidebar">
         <div class="sidebar-logo">
-            <img src="{{ asset('assets/logo.png') }}" alt="Logo">
-            <h2>Admin Panel</h2>
+            <img src="assets/logo.png" alt="Logo">
+            <h2>Provider Panel</h2>
         </div>
         <nav class="sidebar-nav">
             <ul>
-                <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                <li><a href="{{ route('admin.users') }}">Users</a></li>
-                <li><a href="{{ route('admin.scholarships') }}" class="active">Scholarships</a></li>
-                <li><a href="{{ route('admin.reports') }}">Reports</a></li>
-                <li><a href="{{ route('admin.settings') }}">Settings</a></li>
-                <li><a href="{{ route('admin.logout') }}">Logout</a></li>
+                <li><a href="{{ route('provider.dashboard') }}" class="active">Dashboard</a></li>
+                <li><a href="{{ route('provider.scholarships') }}">My Scholarships</a></li>
+                <li><a href="{{ route('provider.applications') }}">Applications</a></li>
+                <li><a href="{{ route('provider.reports') }}">Reports</a></li>
+                <li><a href="{{ route('provider.settings') }}">Settings</a></li>
+                <li><a href="{{ route('provider.logout') }}">Logout</a></li>
             </ul>
         </nav>
     </aside>
- 
-<main class="main-content">    
+
+    <main class="main-content">    
 
 <button class="add-btn" onclick="openModal()">+ Add Scholarship</button>
 
         <section class="dashboard-cards">
             <div class="card">
                 <h3>Total Scholarships</h3>
-                <p>{{ $totalScholarships }}</p>
+                <p>{{ $totalUploadedScholarships }}</p>
             </div>
             <div class="card">
                 <h3>Pending Scholarships</h3>
-                <p>{{ $pendingScholarships }}</p>
+                <p>{{ $totalApplicants }}</p>
             </div>
             <div class="card">
                 <h3>Approved Scholarships</h3>
-                <p>{{ $approvedScholarships }}</p>
+                <p>{{ $approvedApplications }}</p>
             </div>
             <div class="card">
                 <h3>Rejected Scholarships</h3>
-                <p>{{ $rejectedScholarships }}</p>
+                <p>{{ $rejectedApplications }}</p>
             </div>
             <div class="card">
                 <h3>Hold Scholarships</h3>
-                <p>{{ $holdScholarships }}</p>
+                <p>{{ $pendingApplications }}</p>
             </div>
         </section>
 

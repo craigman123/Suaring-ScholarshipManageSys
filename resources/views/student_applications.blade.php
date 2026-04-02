@@ -69,16 +69,35 @@
                     </p>
                     <p>Submitted: {{ $app->created_at->format('M d, Y') }}</p>
                     
-                    <a href="{{ route('student.application.view', $app->id) }}" style="display:inline-block; padding:0.3rem 0.7rem; background:#007bff; color:white; border-radius:4px; text-decoration:none; font-size:0.9rem; margin-top:0.5rem;">
-                        View Details
+                    <a href="{{ route('student.application.show', $app->id) }}" style="display:inline-block; padding:0.3rem 0.7rem; background:#007bff; color:white; border-radius:4px; text-decoration:none; font-size:0.9rem; margin-top:0.5rem;">
+                        Edit Application
                     </a>
-                    <button class="delete-btn" data-id="{{ $app->id }}" style="display:inline-block; padding:0.3rem 0.7rem; background:#dc3545; color:white; border-radius:4px; border:none; font-size:0.9rem; margin-top:0.5rem;">
+                    <button type="button"
+                        class="delete-btn"
+                        data-url="{{ route('student.application.delete', $app->id) }}">
                         Delete
                     </button>
                 </div>
             @empty
                 <p>You have not applied for any scholarships yet.</p>
             @endforelse
+
+            <!-- Modal (only ONE, outside loop) -->
+            <div id="deleteModal" class="modal">
+                <div class="modal-overlay"></div>
+                <div class="modal-content">
+                    <h3>Confirm Deletion</h3>
+                    <p>Are you sure you want to delete this application? This action cannot be undone.</p>
+                    <div class="modal-actions">
+                        <button id="cancelBtn" class="btn-cancel">Cancel</button>
+                        <form id="deleteForm" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-delete">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 </body>

@@ -18,6 +18,11 @@ class Scholarship extends Model
         return $this->hasOne(Requirements::class, 'scholarship_id');
     }
 
+    public function requirementsForAPI()
+    {
+        return $this->hasMany(Requirements::class, 'scholarship_id');
+    }
+
     public function applications()
     {
         return $this->hasMany(Application::class);

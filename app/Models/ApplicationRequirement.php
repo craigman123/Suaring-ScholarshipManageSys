@@ -11,11 +11,10 @@ class ApplicationRequirement extends Model
 
     protected $fillable = [
         'application_id',
-        'essay',
         'file_path',
         'passed',
     ];
-
+    
     // Relationship: requirement belongs to an application
     public function application()
     {

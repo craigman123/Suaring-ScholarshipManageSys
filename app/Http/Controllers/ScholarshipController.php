@@ -112,19 +112,19 @@ class ScholarshipController extends Controller
             'status' => $request->status,
         ]);
 
-        // Convert textarea → array
+        $requirementsArray = [];
+
         if ($request->filled('requirement')) {
-            $requirementsArray = array_filter(
-                array_map('trim', explode("\n", $request->requirement))
-            );
-        } else {
-            $requirementsArray = [];
+            // Split by comma OR newline
+            $raw = preg_split('/[\n,]+/', $request->requirement); 
+            $requirementsArray = array_map('trim', $raw);    
+            $requirementsArray = array_filter($requirementsArray); 
         }
 
         // Store as array (Laravel handles JSON)
         Requirements::create([
             'scholarship_id' => $scholarship->id,
-            'requirements' => json_encode($requirementsArray),
+            'requirements' => $requirementsArray,
         ]);
 
         LogHelper::log("INFO", "Scholarship added successfully!", auth()->user());
@@ -157,13 +157,22 @@ class ScholarshipController extends Controller
             'status' => $request->status ?? 'Active',
         ]);
 
-        $requirementsArray = $request->requirement
-            ? array_filter(array_map('trim', explode("\n", $request->requirement)))
-            : ['none']; 
+        $requirementsArray = [];
 
+        if ($request->filled('requirement')) {
+            // Split by comma and/or newline
+            $raw = preg_split('/[\n,]+/', $request->requirement);
+
+            // Trim each element and remove empty strings
+            $requirementsArray = array_filter(array_map('trim', $raw));
+        } else {
+            $requirementsArray = ['none'];
+        }
+
+        // Store as array (Laravel will cast to JSON automatically if your model has $casts)
         \App\Models\Requirements::create([
             'scholarship_id' => $scholarship->id,
-            'requirements' => json_encode($requirementsArray),
+            'requirements' => $requirementsArray,
         ]);
 
         try {

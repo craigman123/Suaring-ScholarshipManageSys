@@ -148,7 +148,7 @@ tr:nth-child(even) {
     width: 900px;
     position: relative; 
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    height: 60vh;
+    height: 70vh;
 }
 
 .modal-content form {

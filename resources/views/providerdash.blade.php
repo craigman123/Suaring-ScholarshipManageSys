@@ -19,8 +19,8 @@
     <nav class="sidebar-nav">
         <ul>
             <li><a href="{{ route('provider.dashboard') }}" class="active">Dashboard</a></li>
-            <li><a href="{{ route('provider.scholarships') }}">My Scholarships</a></li>
-            <li><a href="{{ route('provider.applications') }}">Applications</a></li>
+            <li><a href="{{ route('provider.scholarships') }}">Uploaded Scholarships</a></li>
+            <li><a href="{{ route('provider.applications') }}">Applicants</a></li>
             <li><a href="{{ route('provider.reports') }}">Reports</a></li>
             <li><a href="{{ route('provider.settings') }}">Settings</a></li>
             <li><a href="{{ route('provider.logout') }}">Logout</a></li>
@@ -39,11 +39,11 @@
     <section class="dashboard-cards">
         <div class="card">
             <h3>Total Scholarships</h3>
-            <p>{{ $totalScholarships }}</p>
+            <p>{{ $totalUploadedScholarships }}</p>
         </div>
         <div class="card">
             <h3>Active Scholarships</h3>
-            <p>{{ $activeScholarships }}</p>
+            <p>{{ $totalApplicants }}</p>
         </div>
         <div class="card">
             <h3>Pending Applications</h3>

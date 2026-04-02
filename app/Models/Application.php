@@ -12,6 +12,7 @@ class Application extends Model
     protected $fillable = [
         'user_id',
         'scholarship_id',
+        'essay',
         'status',
     ];
 
@@ -31,5 +32,15 @@ class Application extends Model
     public function requirements()
     {
         return $this->hasMany(ApplicationRequirement::class);
+    }
+
+    public function files()
+    {
+        return $this->hasMany(ApplicationRequirement::class, 'application_id');
+    }
+
+    public function filesforApi()
+    {
+        return $this->hasOne(ApplicationRequirement::class, 'application_id');
     }
 }

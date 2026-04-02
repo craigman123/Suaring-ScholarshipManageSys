@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Application;
 use App\Models\Scholarship;
 use Illuminate\Http\Request;
 
@@ -29,9 +30,20 @@ class ApplicationsController extends Controller
         ));
     }
 
+    public function show($id)
+    {
+        $application = Application::with('scholarship.requirement', 'requirements')
+            ->where('user_id', auth()->id())
+            ->findOrFail($id);
+
+        $scholarship = $application->scholarship;
+
+        return view('edit_application_page', compact('application', 'scholarship'));
+    }
+
     public function dashboard()
     {
-        return view('student_dashboard');
+        return view('studentdash');
     }
 
     public function scholarships()

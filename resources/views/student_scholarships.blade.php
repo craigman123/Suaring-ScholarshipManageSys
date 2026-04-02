@@ -28,6 +28,18 @@
             </ul>
         </nav>
     </aside>
+
+    @if(session('success'))
+        <div style="background-color: #d1fae5; color: #065f46; padding: 10px; z-index: 100; border-radius: 5px;">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div style="background-color: #fee2e2; color: #991b1b; padding: 10px; z-index: 100; border-radius: 5px;">
+            {{ session('error') }}
+        </div>
+    @endif
     
 
     <!-- Main content -->

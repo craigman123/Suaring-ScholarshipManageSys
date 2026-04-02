@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset('css/application.css') }}">
-    <script src="{{ asset('js/application.js') }}"></script>
+    <script src="{{ asset('js/edit-application.js') }}"></script>
     <title>Application Page</title>
 </head>
 <body>
     <div class="poster-page">
-    <a href="{{ route('student.scholarships')}}" class="back-btn">
+    <a href="{{ route('student.applications')}}" class="back-btn">
         <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
         fill="currentColor" viewBox="0 0 24 24" >
         <path d="M11.79 6.29 6.09 12l5.7 5.71 1.42-1.42L9.91 13H18v-2H9.91l3.3-3.29z"></path>
@@ -74,46 +74,61 @@
                 </div>
             @endif
 
-            <form action="{{ route('student.scholarships.apply', $scholarship->id) }}" 
+            <form action="{{ route('student.application.update', $application->id) }}" 
                 method="POST" 
                 enctype="multipart/form-data">
 
                 @csrf
+                @method('PUT')
 
                 <div style="margin-bottom: 10px;">
                     <label style="font-weight: bold;" for="essay" placeholder="Intentions . . .">What is your intention to apply for this scholarship?</label>
-                    <textarea name="essay" id="essay" rows="5" style="width:100%; padding:5px;"></textarea>
+                    <textarea name="essay" id="essay" rows="5" style="width:100%; padding:5px;">
+                        {{ old('essay', $application->essay ?? '') }}
+                    </textarea>
                 </div>
 
                 <div style="margin-bottom: 10px;">
                     <h2 style="margin-bottom: 10px;">Upload Requirements:</h2>
 
                     @foreach($scholarship->requirement->requirements ?? [] as $index => $requirement)
+                        @php
+                            $existingFile = $application->requirements->get($index);
+                        @endphp
+
                         <div class="requirement-wrapper" style="margin-bottom:15px;">
                             <label style="font-weight: bold;">{{ $requirement }}</label><br>
 
-                            <!-- Custom file button -->
+                            <!-- Button -->
                             <label class="file-btn" for="requirement_{{ $index }}">Choose Image</label>
+
+                            <!-- Input -->
                             <input type="file"
                                 id="requirement_{{ $index }}"
                                 name="requirements[{{ $index }}]"
                                 accept="image/*"
                                 class="requirement-input"
-                                required
+                                data-index="{{ $index }}"
                                 style="display:none;">
 
+                            <!-- File name -->
                             <span class="file-name" id="fileName_{{ $index }}">No file chosen</span>
-                            <span class="error" id="error_{{ $index }}" style="display:none; color:red;">Image is required!</span>
 
-                            <!-- Preview container for this input -->
-                            <div class="preview-container" id="preview_{{ $index }}" style="margin-top:10px;"></div>
+                            <!-- Preview -->
+                            <div class="preview-container" id="preview_{{ $index }}" style="margin-top:10px;">
+                                @if($existingFile)
+                                    <img src="{{ asset('storage/' . $existingFile->file_path) }}"
+                                        style="width:120px; border-radius:5px;">
+                                @endif
+                            </div>
                         </div>
+
                     @endforeach
                 </div>
 
                 <!-- ✅ Submit Button -->
                 <button class="submit-btn" type="submit">
-                    Submit Application
+                    {{ isset($application) ? 'Update Application' : 'Submit Application' }}
                 </button>
 
                 <div class="notify-container">
