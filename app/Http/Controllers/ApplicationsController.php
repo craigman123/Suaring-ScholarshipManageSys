@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Application;
 use App\Models\Scholarship;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ApplicationsController extends Controller
 {
@@ -65,5 +66,83 @@ class ApplicationsController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/')->with('message', 'Logged out successfully!');
+    }
+
+
+
+
+
+    public function showApplication(Application $application)
+    {
+        return view('applications_show', compact('application'));
+    }
+
+    public function showFiles($id)
+    {
+        // Fetch the application
+        $application = Application::with('user')->findOrFail($id);
+        // if($application->provider_id !== auth()->id()) abort(403);
+
+        // The uploaded files (essay + requirements) should be stored paths in DB
+        $essayFile = $application->essay; // assuming 'essay' column
+        $requirements = json_decode($application->requirements, true) ?? []; // array of file paths
+
+        return view('applications_files', compact('application', 'essayFile', 'requirements'));
+    }
+
+    public function approveReject(Application $id, Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'error' => 'Unauthenticated'
+            ], 401);
+        }
+
+        // ✅ Eager load scholarship (no need for find)
+        $application->load('scholarship');
+
+        // ✅ If no status, just return details
+        if (!$request->has('status')) {
+            return response()->json([
+                'message' => 'Application details fetched',
+                'data' => $application
+            ], 200);
+        }
+
+        // ✅ Validate status
+        $request->validate([
+            'status' => 'required|in:approved,rejected'
+        ]);
+
+        $statusCheck = strtolower($request->status);
+
+        // ✅ Authorization (owner or admin)
+        if ($user->role_id != 1 && $application->scholarship->provider_id != $user->id) {
+            return response()->json([
+                'error' => 'Unauthorized',
+                'message' => 'You are not allowed to update this application'
+            ], 403);
+        }
+
+        // ✅ Prevent double updates
+        if ($application->status !== 'Pending') {
+            return response()->json([
+                'error' => 'Already processed'
+            ], 400);
+        }
+
+        // ✅ Update status
+        $application->status = ucfirst($statusCheck);
+        $application->save();
+
+        return response()->json([
+            'message' => 'Application status updated successfully',
+            'data' => [
+                'id' => $application->id,
+                'status' => $application->status
+            ]
+        ], 200);
     }
 }

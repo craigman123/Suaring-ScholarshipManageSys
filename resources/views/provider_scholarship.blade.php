@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="{{ asset('css/studDash.css') }}" rel="stylesheet">
     <link href="{{ asset('css/adminDash.css') }}" rel="stylesheet">
-    <script src="{{ asset('js/studDash.js') }}"></script>
+    <link href="{{ asset('css/scholarship.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/providerscholarship.css') }}" rel="stylesheet">
+    <script src="{{ asset('js/scholarships.js') }}"></script>
     <title>Document</title>
 </head>
 <body>
@@ -17,8 +18,8 @@
         </div>
         <nav class="sidebar-nav">
             <ul>
-                <li><a href="{{ route('provider.dashboard') }}" class="active">Dashboard</a></li>
-                <li><a href="{{ route('provider.scholarships') }}">My Scholarships</a></li>
+                <li><a href="{{ route('provider.dashboard') }}" >Dashboard</a></li>
+                <li><a href="{{ route('provider.scholarships') }}" class="active">Uploaded Scholarships</a></li>
                 <li><a href="{{ route('provider.applications') }}">Applications</a></li>
                 <li><a href="{{ route('provider.reports') }}">Reports</a></li>
                 <li><a href="{{ route('provider.settings') }}">Settings</a></li>
@@ -37,19 +38,19 @@
                 <p>{{ $totalUploadedScholarships }}</p>
             </div>
             <div class="card">
-                <h3>Pending Scholarships</h3>
+                <h3>Total Applicants</h3>
                 <p>{{ $totalApplicants }}</p>
             </div>
             <div class="card">
-                <h3>Approved Scholarships</h3>
+                <h3>Approved Applications</h3>
                 <p>{{ $approvedApplications }}</p>
             </div>
             <div class="card">
-                <h3>Rejected Scholarships</h3>
+                <h3>Rejected Applications</h3>
                 <p>{{ $rejectedApplications }}</p>
             </div>
             <div class="card">
-                <h3>Hold Scholarships</h3>
+                <h3>Pending Applications</h3>
                 <p>{{ $pendingApplications }}</p>
             </div>
         </section>
@@ -86,22 +87,34 @@
                     ">
                         {{ $scholarship->status }}
                     </td>
-                    <td style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
+                    <td style="display: flex; align-items: center; gap: 5px;">
                         <button type="button" class="edit-scholarship-btn"
-                                data-id="{{ $scholarship->id }}"
-                                data-title="{{ $scholarship->title }}"
-                                data-description="{{ $scholarship->description }}"
-                                data-deadline="{{ $scholarship->deadline }}"
-                                data-status="{{ $scholarship->status }}"
-                                data-requirement="{{ $scholarship->requirement && is_array($scholarship->requirement->requirements) ? implode('|', $scholarship->requirement->requirements) : '' }}"
-                                data-poster="{{ $scholarship->image_path ? asset('storage/' . $scholarship->image_path) : '' }}">
-                            <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24" ><path d="M5 21h14c1.1 0 2-.9 2-2v-7h-2v7H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2"></path><path d="M7 13v3c0 .55.45 1 1 1h3c.27 0 .52-.11.71-.29l9-9a.996.996 0 0 0 0-1.41l-3-3a.996.996 0 0 0-1.41 0l-9.01 8.99A1 1 0 0 0 7 13m10-7.59L18.59 7 17.5 8.09 15.91 6.5zm-8 8 5.5-5.5 1.59 1.59-5.5 5.5H9z"></path></svg>
+                            data-id="{{ $scholarship->id }}"
+                            data-title="{{ $scholarship->title }}"
+                            data-description="{{ $scholarship->description }}"
+                            data-deadline="{{ $scholarship->deadline }}"
+                            data-status="{{ $scholarship->status }}"
+                            data-requirement="{{ $scholarship->requirement && is_array($scholarship->requirement->requirements) ? implode('|', $scholarship->requirement->requirements) : '' }}"
+                            data-poster="{{ $scholarship->image_path ? asset('storage/' . $scholarship->image_path) : '' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M5 21h14c1.1 0 2-.9 2-2v-7h-2v7H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2"></path>
+                                <path d="M7 13v3c0 .55.45 1 1 1h3c.27 0 .52-.11.71-.29l9-9a.996.996 0 0 0 0-1.41l-3-3a.996.996 0 0 0-1.41 0l-9.01 8.99A1 1 0 0 0 7 13m10-7.59L18.59 7 17.5 8.09 15.91 6.5zm-8 8 5.5-5.5 1.59 1.59-5.5 5.5H9z"></path>
+                            </svg>
                         </button>
 
-                        <form action="{{ route('admin.scholarships.destroy', $scholarship->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this scholarship?');">
+                        <!-- DELETE BUTTON -->
+                        <form action="{{ route('admin.scholarships.destroy', $scholarship->id) }}" method="POST" 
+                            onsubmit="return confirm('Are you sure you want to delete this scholarship?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="delete-btn"><svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24" ><path d="M20 4H8.51c-.64 0-1.25.31-1.63.84l-4.7 6.58a.99.99 0 0 0 0 1.16l4.7 6.58c.37.52.98.84 1.63.84H20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 14H8.51l-4.29-6 4.29-6H20z"></path><path d="m9.79 9.21 2.8 2.79-2.8 2.79 1.42 1.42 2.79-2.8 2.79 2.8 1.42-1.42-2.8-2.79 2.8-2.79-1.42-1.42-2.79 2.8-2.79-2.8z"></path></svg></button>
+                            <button type="submit" class="delete-btn"
+                                @if($scholarship->status !== 'Pending') disabled title="Scholarship Approved cannot delete" @endif
+                                style="@if($scholarship->status !== 'Pending') cursor: not-allowed; opacity: 0.5; @endif">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M20 4H8.51c-.64 0-1.25.31-1.63.84l-4.7 6.58a.99.99 0 0 0 0 1.16l4.7 6.58c.37.52.98.84 1.63.84H20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 14H8.51l-4.29-6 4.29-6H20z"></path>
+                                    <path d="m9.79 9.21 2.8 2.79-2.8 2.79 1.42 1.42 2.79-2.8 2.79 2.8 1.42-1.42-2.8-2.79 2.8-2.79-1.42-1.42-2.79 2.8-2.79-2.8z"></path>
+                                </svg>
+                            </button>
                         </form>
                     </td>
 
@@ -116,7 +129,7 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
 
-            <form action="{{ route('admin.scholarships.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('provider.scholarships.create') }}" method="POST" enctype="multipart/form-data">
 
                 @csrf
                 <div class="modal-title">
@@ -147,14 +160,6 @@
 
                     <label>Deadline</label><br>
                     <input type="date" name="deadline" required><br><br>
-
-                    <label>Status</label><br>
-                    <select name="status" required>
-                        <option value="Pending">Pending</option>
-                        <option value="Approved">Approved</option>
-                        <option value="Rejected">Rejected</option>
-                        <option value="Hold">Hold</option>
-                    </select><br><br>
                     
                 </div>
                 <div class="scholarship-requirements">
@@ -206,13 +211,6 @@
                     <label>Deadline:</label>
                     <input type="date" name="deadline" id="scholarshipDeadline">
 
-                    <label>Status:</label>
-                    <select name="status" id="scholarshipStatus">
-                        <option value="Pending">Pending</option>
-                        <option value="Approved">Approved</option>
-                        <option value="Rejected">Rejected</option>
-                        <option value="Hold">Hold</option>
-                    </select>
                 </div>
 
                 <div class="scholarship-requirements">
@@ -229,8 +227,13 @@
                     </textarea>
                 </div>
 
-                <div class="create-btn">
-                    <button type="submit">Save</button>
+               <div>
+                    <button
+                        type="submit"
+                        class="save-btn"
+                        >
+                        Save
+                    </button>
                 </div>
             </form>
         </div>

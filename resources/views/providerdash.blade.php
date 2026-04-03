@@ -20,7 +20,7 @@
         <ul>
             <li><a href="{{ route('provider.dashboard') }}" class="active">Dashboard</a></li>
             <li><a href="{{ route('provider.scholarships') }}">Uploaded Scholarships</a></li>
-            <li><a href="{{ route('provider.applications') }}">Applicants</a></li>
+            <li><a href="{{ route('provider.applications') }}">Applications</a></li>
             <li><a href="{{ route('provider.reports') }}">Reports</a></li>
             <li><a href="{{ route('provider.settings') }}">Settings</a></li>
             <li><a href="{{ route('provider.logout') }}">Logout</a></li>

@@ -42,10 +42,6 @@
             <p>{{ $totalScholarships }}</p>
         </div>
         <div class="card">
-            <h3>Active Scholarships</h3>
-            <p>{{ $activeScholarships }}</p>
-        </div>
-        <div class="card">
             <h3>Pending Applications</h3>
             <p>{{ $pendingApplications }}</p>
         </div>

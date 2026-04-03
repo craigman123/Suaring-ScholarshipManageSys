@@ -18,6 +18,8 @@ return new class extends Migration
             $table->text('description');
             $table->date('deadline');
             $table->string('status');
+            $table->unsignedBigInteger('provider_id');
+            $table->foreign('provider_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

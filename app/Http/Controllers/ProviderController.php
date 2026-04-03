@@ -45,18 +45,57 @@ class ProviderController extends Controller
         return view('providerdash');
     }
 
+    public function viewApplications($id){
+        $scholarship = Scholarship::findOrFail($id);
+
+        $applications = Application::with(['user', 'requirements'])
+            ->where('scholarship_id', $id)
+            ->get();
+
+        return view('view_applications', compact('scholarship', 'applications'));
+    }
+
     public function profile(){
         return view('provider_profile');
     }
 
     public function applications(){
-        return view('provider_applications');
+        $providerId = Auth::id();
+        $totalUploadedScholarships = Scholarship::where('provider_id', $providerId)->count();
+        $scholarshipIds = Scholarship::where('provider_id', $providerId)->pluck('id');
+        $totalApplicants = Application::whereIn('scholarship_id', $scholarshipIds)->count();
+
+        $pendingApplications = Application::whereIn('scholarship_id', $scholarshipIds)
+            ->where('status', 'pending')
+            ->count();
+
+        $applications = Application::whereIn('scholarship_id', $scholarshipIds)->latest()->get();
+
+        $approvedApplications = Application::whereIn('scholarship_id', $scholarshipIds)
+            ->where('status', 'approved')
+            ->count();
+
+        $rejectedApplications = Application::whereIn('scholarship_id', $scholarshipIds)
+            ->where('status', 'rejected')
+            ->count();
+
+        $scholarships = Scholarship::where('provider_Id', auth()->id())->get();
+
+        return view('provider_applicants', compact(
+            'totalUploadedScholarships',
+            'totalApplicants',
+            'pendingApplications',
+            'approvedApplications',
+            'rejectedApplications',
+            'applications',
+            'scholarships'
+        ));
     }
 
     public function scholarships(){
         $providerId = Auth::id();
-        $totalUploadedScholarships = Scholarship::where('id', $providerId)->count();
-        $scholarshipIds = Scholarship::where('id', $providerId)->pluck('id');
+        $totalUploadedScholarships = Scholarship::where('provider_id', $providerId)->count();
+        $scholarshipIds = Scholarship::where('provider_id', $providerId)->pluck('id');
         $totalApplicants = Application::whereIn('scholarship_id', $scholarshipIds)->count();
 
         $pendingApplications = Application::whereIn('scholarship_id', $scholarshipIds)
@@ -74,7 +113,7 @@ class ProviderController extends Controller
             ->where('status', 'rejected')
             ->count();
 
-        $scholarships = Scholarship::where('id', auth()->id())->get();
+        $scholarships = Scholarship::where('provider_Id', auth()->id())->get();
 
         return view('provider_scholarship', compact(
             'totalUploadedScholarships',

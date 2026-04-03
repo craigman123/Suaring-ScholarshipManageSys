@@ -71,6 +71,16 @@ class ApplyScholarshipsController extends Controller
                 ->with('error', 'You have already applied for this scholarship.');
         }
 
+        if($scholarship->deadline && \Carbon\Carbon::parse($scholarship->deadline)->isPast()) {
+            return redirect()->route('student.scholarships.view', $scholarship->id)
+                ->with('error', 'The application deadline for this scholarship has passed.');
+        }
+
+        if($scholarship->status !== 'Approved') {
+            return redirect()->route('student.scholarships.view', $scholarship->id)
+                ->with('error', 'This scholarship is not currently accepting applications.');
+        }
+
         // 2️⃣ Validate
         $request->validate([
             'essay' => 'nullable|string',
@@ -252,6 +262,8 @@ class ApplyScholarshipsController extends Controller
                 ->where('scholarship_id', $scholarship_id)
                 ->exists();
 
+            $scholarship = Scholarship::with('requirementsForAPI')->find($scholarship_id);
+
             if ($alreadyApplied) {
                 return response()->json([
                     'status' => 'Invalid Request',
@@ -259,7 +271,26 @@ class ApplyScholarshipsController extends Controller
                 ], 422);
             }
 
-            $scholarship = Scholarship::with('requirementsForAPI')->find($scholarship_id);
+            if(!Scholarship::find($scholarship_id)){
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Scholarship not found'
+                ], 404);
+            }
+
+            if($scholarship->deadline && \Carbon\Carbon::parse($scholarship->deadline)->isPast()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'The application deadline for this scholarship has passed.'
+                ], 422);
+            }
+
+            if($scholarship->status !== 'Approved') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'This scholarship is not currently accepting applications.'
+                ], 422);
+            }
 
             // 2️⃣ Wrap uploaded files
             $uploadedFiles = Arr::wrap($request->file('requirements'));
@@ -388,7 +419,7 @@ class ApplyScholarshipsController extends Controller
                     Storage::disk('public')->delete($existing->file_path);
                 }
 
-                $path = $file->store('requirements', 'public');
+                $path = $file->store('applications', 'public');
 
                 DB::table('application_requirements')
                     ->where('id', $requirementId)

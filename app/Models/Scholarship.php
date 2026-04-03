@@ -10,7 +10,7 @@ class Scholarship extends Model
     use HasFactory;
 
     protected $fillable = [
-        'image_path', 'title', 'description', 'deadline', 'status', 'requirements'
+        'image_path', 'title', 'description', 'deadline', 'status', 'requirements', 'provider_id',
     ];
 
     public function requirement()

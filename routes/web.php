@@ -8,6 +8,7 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\ScholarshipController;
+use App\Http\Controllers\ScholarshipProviderController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentScholarshipController;
 use App\Http\Controllers\UserController;
@@ -112,14 +113,28 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::prefix('provider')->name('provider.')->group(function () {
-        Route::get('/logout', [ProfileController::class, 'logout'])->name('logout');
+        Route::get('/logout', [ProviderController::class, 'logout'])->name('logout');
         // Route::get('profile', [ProfileController::class, 'index'])
         //     ->name('profile');
 
         Route::get('/dashboard', [ProviderController::class, 'index'])->name('dashboard');
+        Route::get('/applications/view/{id}', [ProviderController::class, 'viewApplications'])
+            ->name('applications.view');
         
         Route::get('/scholarships', [ProviderController::class, 'scholarships'])->name('scholarships');
-        Route::get('/applications', [ProviderController::class, 'applications'])->name('applications');
+        Route::post('/scholarships/create', [ScholarshipProviderController::class, 'webStore'])->name('scholarships.create');
+
+        Route::post('/applications/{application}/approve', [ApplicationsController::class, 'approveApplication'])
+            ->name('applications.approve');
+        Route::post('/applications/{application}/reject', [ApplicationsController::class, 'rejectApplication'])
+            ->name('applications.reject');
+        Route::get('/applications/{application}', [ApplicationsController::class, 'showApplication'])
+            ->name('applications.show');
+        Route::get('/applications/{application}/files', [ApplicationsController::class, 'showFiles'])
+            ->name('applications.files');
+
+        Route::get('/applications', [ProviderController::class, 'applications'])
+            ->name('applications');
         Route::get('/reports', [ProviderController::class, 'reports'])->name('reports');
         Route::get('/settings', [ProviderController::class, 'settings'])->name('settings');
 

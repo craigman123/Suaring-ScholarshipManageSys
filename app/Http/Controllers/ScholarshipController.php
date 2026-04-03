@@ -6,6 +6,7 @@ use App\Helpers\LogHelper;
 use App\Models\Requirements;
 use App\Models\Scholarship;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ScholarshipController extends Controller
@@ -84,7 +85,7 @@ class ScholarshipController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'deadline' => 'required|date',
-            'status' => 'required|string',
+            'status' => 'nullable|string',
             'requirement' => 'nullable|string',
         ]);
 
@@ -103,13 +104,34 @@ class ScholarshipController extends Controller
             ? $request->file('poster')->store('posters', 'public') 
             : null;
 
-        // Create scholarship
+        $statusCheck = strtolower($request->status ?? 'pending');
+
+        $allowedStatuses = ['pending', 'approved', 'rejected', 'hold'];
+
+        if (!in_array($statusCheck, $allowedStatuses)) {
+            return response()->json([
+                'error' => 'Failed to create scholarship',
+                'message' => 'Status field is invalid'
+            ], 422);
+        }
+
+        // ✅ Role-based restriction
+        $user = Auth::user();
+
+        if ($user->role_id == 2 && $statusCheck !== 'pending') {
+            return response()->json([
+                'error' => 'Unauthorized status',
+                'message' => 'You are only allowed to set status to pending'
+            ], 403);
+        }
+
         $scholarship = \App\Models\Scholarship::create([
             'image_path' => $posterPath,
             'title' => $request->title,
             'description' => $request->description,
             'deadline' => $request->deadline,
-            'status' => $request->status,
+            'status' => ucfirst($statusCheck),
+            'provider_id' => $user->id,
         ]);
 
         $requirementsArray = [];
@@ -154,7 +176,7 @@ class ScholarshipController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'deadline' => $request->deadline,
-            'status' => $request->status ?? 'Active',
+            'status' => $request->status ?? 'Pending',
         ]);
 
         $requirementsArray = [];
@@ -233,7 +255,25 @@ class ScholarshipController extends Controller
         }
 
         if ($request->has('status')) {
-            $scholarship->status = $request->status;
+            $statusCheck = strtolower($request->status);
+            $allowedStatuses = ['pending', 'approved', 'rejected', 'hold'];
+
+            if (!in_array($statusCheck, $allowedStatuses)) {
+                return response()->json([
+                    'error' => 'Invalid status value'
+                ], 422);
+            }
+
+            $user = Auth::user();
+
+            if ($user->role_id == 2 && $statusCheck !== 'pending') {
+                return response()->json([
+                    'error' => 'Unauthorized',
+                    'message' => 'Unauthorized to change status'
+                ], 403);
+            }
+
+            $scholarship->status = ucfirst($statusCheck);
         }
 
         $scholarship->save();
@@ -274,84 +314,92 @@ class ScholarshipController extends Controller
     }
 
    public function webUpdate(Request $request, Scholarship $scholarship)
-{
-    // 1️⃣ Validate the request
-    $request->validate([
-        'poster' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'title' => 'required|string|max:255',
-        'description' => 'required|string',
-        'deadline' => 'required|date',
-        'requirement' => 'nullable|string',
-        'status' => 'required|string',
-    ]);
-
-    // 2️⃣ Handle poster upload
-    if ($request->hasFile('poster')) {
-        $posterPath = $request->file('poster')->store('posters', 'public');
-        $scholarship->image_path = $posterPath;
-    }
-
-    // 3️⃣ Update scholarship fields
-    $scholarship->update([
-        'title' => $request->title,
-        'description' => $request->description,
-        'deadline' => $request->deadline,
-        'status' => $request->status,
-    ]);
-
-    // 4️⃣ Prepare requirements array
-    $requirementsArray = $request->requirement
-    ? array_filter(array_map('trim', explode("\n", $request->requirement)))
-    : [];
-
-    // 5️⃣ Update existing requirement or create new
-    if ($scholarship->requirement) {
-        // Update existing requirement row
-        $scholarship->requirement->update([
-            'requirements' => $requirementsArray
+    {
+        // 1️⃣ Validate the request
+        $request->validate([
+            'poster' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'deadline' => 'required|date',
+            'requirement' => 'nullable|string',
+            'status' => 'required|string',
         ]);
-    } else {
-        // Create new requirement row with explicit scholarship_id
-        $requirement = new Requirements();
-        $requirement->scholarship_id = $scholarships->id;
-        $requirement->requirements = $requirementsArray;
-        $requirement->save();
+
+        // 2️⃣ Handle poster upload
+        if ($request->hasFile('poster')) {
+            $posterPath = $request->file('poster')->store('posters', 'public');
+            $scholarship->image_path = $posterPath;
+        }
+
+        // 3️⃣ Update scholarship fields
+        $scholarship->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'deadline' => $request->deadline,
+            'status' => $request->status,
+        ]);
+
+        // 4️⃣ Prepare requirements array
+        $requirementsArray = $request->requirement
+        ? array_filter(array_map('trim', explode("\n", $request->requirement)))
+        : [];
+
+        // 5️⃣ Update existing requirement or create new
+        if ($scholarship->requirement) {
+            // Update existing requirement row
+            $scholarship->requirement->update([
+                'requirements' => $requirementsArray
+            ]);
+        } else {
+            // Create new requirement row with explicit scholarship_id
+            $requirement = new Requirements();
+            $requirement->scholarship_id = $scholarships->id;
+            $requirement->requirements = $requirementsArray;
+            $requirement->save();
+        }
+
+        // 6️⃣ Optional: log the update
+        LogHelper::log("UPDATED SCHOLARSHIP", "Successfully updated scholarship", auth()->user());
+
+        // 7️⃣ Redirect back with success message
+        return redirect()->back()->with('success', 'Scholarship updated successfully!');
     }
-
-    // 6️⃣ Optional: log the update
-    LogHelper::log("UPDATED SCHOLARSHIP", "Successfully updated scholarship", auth()->user());
-
-    // 7️⃣ Redirect back with success message
-    return redirect()->back()->with('success', 'Scholarship updated successfully!');
-}
 
     public function destroy($id)
     {
-        $scholarship = \App\Models\Scholarship::find($id);
+        $scholarship = Scholarship::find($id);
 
-        if($scholarship){
-            $requirement = Requirements::where('scholarship_id', $scholarship->id)->first();
-            if ($requirement) {
-                $requirement->delete();
-            }
-
-            if($scholarship->image_path) {
-                Storage::delete('public/' . $scholarship->image_path);
-            }
-
-            $scholarship->delete();
-
-            LogHelper::log("DELETED SCHOLARSHIP", "Successfully deleted scholarship", auth()->user());  
-            return response()->json([
-                'message' => 'Scholarship deleted successfully!'
-            ], 200);
-
-        } else {
-            LogHelper::error("ERROR DELETING SCHOLARSHIP", "Error deleting scholarship", auth()->user()); 
+        if (!$scholarship) {
+            LogHelper::error("ERROR DELETING SCHOLARSHIP", "Scholarship not found", auth()->user());
             return response()->json([
                 'message' => 'Scholarship not found!'
             ], 404);
         }
+
+        $user = Auth::user();
+
+        if ($user->role_id != 1 && $scholarship->provider_id != $user->id) {
+            return response()->json([
+                'error' => 'Unauthorized',
+                'message' => 'You are not allowed to delete this scholarship'
+            ], 403);
+        }
+
+        // ✅ Delete ALL related requirements (not just first)
+        Requirements::where('scholarship_id', $scholarship->id)->delete();
+
+        // ✅ Delete image safely
+        if ($scholarship->image_path && Storage::exists('public/' . $scholarship->image_path)) {
+            Storage::delete('public/' . $scholarship->image_path);
+        }
+
+        $scholarship->delete();
+
+        LogHelper::log("DELETED SCHOLARSHIP", "Successfully deleted scholarship", $user);
+
+        return response()->json([
+            'message' => 'Scholarship deleted successfully!'
+        ], 200);
     }
 
     public function webDestroy($id)
@@ -372,6 +420,28 @@ class ScholarshipController extends Controller
             LogHelper::error("ERROR DELETING SCHOLARSHIP", "Error deleting scholarship", auth()->user()); 
             return redirect()->back()->with('error', 'Something went wrong while deleting.');
         }
+    }
+
+
+
+
+    public function providerGetScholarship($id)
+    {
+        $scholarship = Scholarship::with('requirement')->where('provider_id', auth()->id())->find($id);
+
+        if (!$scholarship) {
+            return response()->json([
+                'message' => 'Scholarship not found or you do not have access to it'
+            ], 404);
+        }
+
+        return response()->json($scholarship);
+    }
+    
+    public function getAllUploadedScholarships()
+    {
+        $scholarships = Scholarship::with('requirement')->where('provider_id', auth()->id())->get();
+        return response()->json($scholarships);
     }
 
     
