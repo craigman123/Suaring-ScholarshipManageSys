@@ -121,7 +121,7 @@
         </div>
 
         <!-- Edit Button -->
-        <a href="{{ route('student.profile.update') }}" class="edit-btn">
+        <a href="{{ route('student.profile.show') }}" class="edit-btn">
             Edit Profile
         </a>
     </div>

@@ -98,16 +98,16 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/application/{id}', [ApplyScholarshipsController::class, 'ApplicationUpdate'])
             ->name('application.update');
     });
+    
+    Route::get('/student/profile/store', [ProfileController::class, 'storeProfile'])
+        ->name('student.profile.store');
+    Route::get('/student/profile/show', [ProfileController::class, 'editProfile'])
+        ->name('student.profile.show');
+    Route::match(['post', 'put'], '/student/profile/update', [ProfileController::class, 'storeProfile'])
+        ->name('student.profile.update');
 
-    Route::get('/student/profile', [ProfileController::class, 'StudentProfile'])
-        ->name('student.profile');
     Route::get('/student/profile', [ProfileController::class, 'index'])
         ->name('student.profile');
-
-    Route::post('/student/profile', [ProfileController::class, 'store'])
-        ->name('student.profile.store');
-    Route::post('/student/profile/update', [ProfileController::class, 'store'])
-        ->name('student.profile.update');
 
 });
 
@@ -137,10 +137,5 @@ Route::middleware(['auth'])->group(function () {
             ->name('applications');
         Route::get('/reports', [ProviderController::class, 'reports'])->name('reports');
         Route::get('/settings', [ProviderController::class, 'settings'])->name('settings');
-
-        Route::post('/profile', [ProfileController::class, 'store'])
-            ->name('admin.profile.store');
-        Route::post('/admin/profile/update', [ProfileController::class, 'store'])
-            ->name('admin.profile.update');
     });
 });

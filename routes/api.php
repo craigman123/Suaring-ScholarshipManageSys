@@ -4,8 +4,10 @@ use App\Http\Controllers\ApplicationsController;
 use App\Http\Controllers\ApplyScholarshipsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScholarshipController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,7 +26,6 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'Apilogout']);
-
     Route::get('/scholarships', [ScholarshipController::class, 'getScholarships']);
     Route::get('/scholarships/{id}', [ScholarshipController::class, 'getScholarship']);
 });
@@ -68,12 +69,16 @@ Route::middleware('auth:sanctum', 'role:3')->group(function () {
             'updateApplication']);
         Route::middleware('auth:sanctum')->delete('/destroyapplication/{id}', [ApplyScholarshipsController::class, 
             'destroyApplication']);
+
+        Route::post('/profile/store', [ProfileController::class, 'store'])->name('profile.store');
+        Route::middleware('auth:sanctum')->match(['post', 'patch'], '/profile/update', [ProfileController::class, 'update'])
+            ->name('profile.update');
+        Route::get('/profile/show', [ProfileController::class, 'getProfile'])->name('profile.show');
     });
 });
 
 Route::middleware('auth:sanctum', 'role:2')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
-    Route::post('/logout', [AuthController::class, 'Apilogout']);
     Route::get('/scholarships', [ScholarshipController::class, 'getScholarships']);
 
     Route::prefix('provider')->group(function () {
@@ -93,9 +98,11 @@ Route::middleware('auth:sanctum', 'role:2')->group(function () {
         Route::middleware('auth:sanctum')->delete('/scholarships/{id}', [ScholarshipController::class, 
             'destroy']);
 
-        Route::middleware('auth:sanctum')->put('/approveReject/{id}', [ApplicationsController::class,
-            'approveReject']);
+        Route::get('/userInquiry/{user_id}', [UserController::class, 'inquireUser']);    
     });
+
+    Route::middleware('auth:sanctum')->put('/provider/approveReject/{application_id}', [ApplicationsController::class,
+             'approveReject']);
 });
 
 Route::get('/debug-user', function () {
@@ -104,4 +111,8 @@ Route::get('/debug-user', function () {
 
 Route::get('/debug-scholarship', function () {
     return App\Models\Scholarship::withoutGlobalScopes()->first();
+});
+
+Route::middleware('auth:sanctum')->get('/debug-user', function() {
+    return response()->json(['user' => Auth::user()]);
 });

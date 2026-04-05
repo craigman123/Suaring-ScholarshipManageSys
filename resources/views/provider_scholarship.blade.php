@@ -21,7 +21,6 @@
                 <li><a href="{{ route('provider.dashboard') }}" >Dashboard</a></li>
                 <li><a href="{{ route('provider.scholarships') }}" class="active">Uploaded Scholarships</a></li>
                 <li><a href="{{ route('provider.applications') }}">Applications</a></li>
-                <li><a href="{{ route('provider.reports') }}">Reports</a></li>
                 <li><a href="{{ route('provider.settings') }}">Settings</a></li>
                 <li><a href="{{ route('provider.logout') }}">Logout</a></li>
             </ul>

@@ -90,52 +90,60 @@ class ApplicationsController extends Controller
         return view('applications_files', compact('application', 'essayFile', 'requirements'));
     }
 
-    public function approveReject(Application $id, Request $request)
+    public function approveReject(Request $request, $application_id)
     {
         $user = Auth::user();
 
         if (!$user) {
-            return response()->json([
-                'error' => 'Unauthenticated'
-            ], 401);
+            return response()->json(['error' => 'Unauthenticated'], 401);
         }
 
-        // ✅ Eager load scholarship (no need for find)
-        $application->load('scholarship');
+        $application = Application::with('scholarship')->find($application_id);
 
-        // ✅ If no status, just return details
-        if (!$request->has('status')) {
-            return response()->json([
-                'message' => 'Application details fetched',
-                'data' => $application
-            ], 200);
+        if (!$application) {
+            return response()->json(['error' => 'Application not found'], 404);
         }
 
-        // ✅ Validate status
-        $request->validate([
-            'status' => 'required|in:approved,rejected'
-        ]);
+        if (!$application->scholarship) {
+            return response()->json(['error' => 'Scholarship not found'], 404);
+        }
 
-        $statusCheck = strtolower($request->status);
-
-        // ✅ Authorization (owner or admin)
         if ($user->role_id != 1 && $application->scholarship->provider_id != $user->id) {
             return response()->json([
                 'error' => 'Unauthorized',
-                'message' => 'You are not allowed to update this application'
+                'message' => 'You can only manage applications for your own scholarships'
             ], 403);
         }
 
-        // ✅ Prevent double updates
-        if ($application->status !== 'Pending') {
+        // ✅ Validate the status input
+        $validated = $request->validate([
+            'status' => 'nullable|in:Approved,Rejected'
+        ]);
+
+        // Prevent double updates
+        if (strtolower($application->status) !== 'pending') {
             return response()->json([
-                'error' => 'Already processed'
+                'message' => 'Application already processed',
+                'error' => 'Already processed',
+                'id' => $application->id,
+                'status' => $application->status,
+                'application' => $application
             ], 400);
         }
 
-        // ✅ Update status
-        $application->status = ucfirst($statusCheck);
-        $application->save();
+        // Update using update()
+        $status = $request->input('status'); // returns null if missing
+            if (!$status) {
+                return response()->json(['message' => 'Status is required'], 400);
+            }
+
+            $application->update([
+                'status' => ucfirst($status),
+            ]);
+
+        if (!$updated) {
+            return response()->json(['error' => 'Failed to update status'], 500);
+        }
 
         return response()->json([
             'message' => 'Application status updated successfully',
@@ -145,4 +153,21 @@ class ApplicationsController extends Controller
             ]
         ], 200);
     }
+
+    // public function approveReject(Request $request, $application_id)
+    // {
+    //     $request->validate([
+    //         'status' => 'nullable|in:approved,rejected'
+    //     ]);
+
+    //     $application = Application::findOrFail($application_id);
+
+    //     $application->status = $request->status;
+    //     $application->save();
+
+    //     return response()->json([
+    //         'message' => 'Application status updated successfully',
+    //         'data' => $application
+    //     ]);
+    // }
 }

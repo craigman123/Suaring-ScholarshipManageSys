@@ -244,4 +244,27 @@ class UserController extends Controller
     }
 
 
+    public function InquireUser($user_id)
+    {
+        // Fetch user with profile
+        $user = User::with('profile')->find($user_id);
+
+        // Check if user exists
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        // Check if account is confidential
+        if ($user->role_id == 1) {
+            return response()->json(['message' => 'This Account is Confidential'], 403);
+        }
+
+        // Return user info along with profile
+        return response()->json([
+            'user' => $user,
+            'profile' => $user->profile->get() ?? null, 
+        ]);
+    }
+
+
 }

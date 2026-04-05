@@ -54,20 +54,16 @@ body {
 .profile-container {
     display: grid;
     grid-template-columns: 0.8fr 2fr;
-    grid-area: 
-    "info achievements"
-    "info achievements"
-    ;
     width: 85%;
-    margin: 20px auto;
-    background: #fff;
-    padding: 30px;
+    margin: 20px;
+    background: #ffffff;
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    height: auto;
 }
 
 .profile-details {
-    grid-area: info;
     width: 20vw;
     background: #c6c6c6;
     border-radius: 10px;
@@ -76,14 +72,12 @@ body {
 }
 
 .achievements-section {
-    grid-area: achievements;
     background: #c6c6c6;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     padding: 20px;
-    margin-left: 20px;
-    width: 20vw;
-    height: 100%;
+    margin: 0 20px 0 0;
+    width: 100%;
 }
 
 .profile-header {

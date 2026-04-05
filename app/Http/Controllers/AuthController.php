@@ -156,30 +156,23 @@ class AuthController extends Controller
     
 
     public function logout(Request $request){
+
         $request->user()->tokens()->delete();
 
         LogHelper::log("LOGOUT", "Account Logge Out", auth()->user());
         return redirect('/')->with('message', 'User logged out succesfully!');
     }
 
-    public function Apilogout(Request $request)
-    {
+    public function Apilogout(Request $request){
         $user = $request->user();
 
         if (!$user) {
-            return response()->json([
-                'message' => 'Unauthenticated'
-            ], 401);
+            return response()->json(['message' => 'User not found'], 404);
         }
 
-        LogHelper::log("LOGOUT", "Account Logged Out", $user);
+        $request->user()->tokens()->delete();
 
-        $user->tokens()->delete();
-
-        return response()->json([
-            'message' => 'Logged out successfully'
-        ], 200);
+        LogHelper::log("LOGOUT", "Account Logged Out", auth()->user());
+        return response()->json(['message' => 'User logged out successfully!']);
     }
-
-    
 }
