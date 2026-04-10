@@ -130,7 +130,7 @@ class AuthController extends Controller
         return redirect('/')->with('message', 'User logged out successfully!');
     }
 
-    public function login(Request $request)
+   public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
@@ -143,9 +143,15 @@ class AuthController extends Controller
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
+        if ($user->user_status_id != 1) {
+            return response()->json([
+                'error' => 'Account is not active. Please contact admin.'
+            ], 403);
+        }
+
         $token = $user->createToken('api-token')->plainTextToken;
 
-        LogHelper::log("LOG IN", "Account Succesfully logged in", auth()->user());
+        LogHelper::log("LOG IN", "Account Successfully logged in", $user);
 
         return response()->json([
             'message' => 'Login successful',
@@ -174,5 +180,29 @@ class AuthController extends Controller
 
         LogHelper::log("LOGOUT", "Account Logged Out", auth()->user());
         return response()->json(['message' => 'User logged out successfully!']);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:5|confirmed',
+        ]);
+
+        $user = Auth::user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json(['message' => 'Current password is incorrect'], 401);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        LogHelper::log("PASSWORD CHANGE", "User changed their password", auth()->user());
+
+        return response()->json([
+            'message' => 'Password changed successfully!',
+            'password_hash' => $user->password
+        ], 200);
     }
 }

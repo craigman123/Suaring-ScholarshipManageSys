@@ -80,7 +80,7 @@
                             <form action="{{ route('provider.applications.approve', $app->id) }}" method="POST">
                                 @csrf
                                 <button class="btn approve"
-                                    @if($app->status === 'Pending')
+                                    @if($app->status === 'approved')
                                         disabled
                                         title="Cannot approve – current status: {{ $app->status }}"
                                         style="cursor: not-allowed; opacity: 0.5;"
@@ -94,7 +94,7 @@
                             <form action="{{ route('provider.applications.reject', $app->id) }}" method="POST">
                                 @csrf
                                 <button class="btn reject"
-                                    @if($app->status === 'Pending')
+                                    @if($app->status === 'approved')
                                         disabled
                                         title="Cannot reject – current status: {{ $app->status }}"
                                         style="cursor: not-allowed; opacity: 0.5;"

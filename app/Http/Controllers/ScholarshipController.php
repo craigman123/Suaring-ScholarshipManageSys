@@ -13,11 +13,14 @@ class ScholarshipController extends Controller
 {   
     public function getScholarship($id)
     {
-        $scholarship = Scholarship::with('requirement')->find($id);
+        $scholarship = Scholarship::with('requirement')
+            ->where('id', $id)
+            ->where('status', 'Approved')
+            ->first();
 
         if (!$scholarship) {
             return response()->json([
-                'message' => 'Scholarship not found'
+                'message' => 'Scholarship not found or inactive'
             ], 404);
         }
 
@@ -26,7 +29,11 @@ class ScholarshipController extends Controller
 
     public function getScholarships()
     {
-        $scholarships = Scholarship::all(); 
+        // Only fetch active scholarships
+        $scholarships = Scholarship::with('requirement')
+            ->where('status', 'Approved')
+            ->get();
+
         return response()->json($scholarships);
     }
 

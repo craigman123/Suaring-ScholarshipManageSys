@@ -98,12 +98,11 @@ class ApplicationsController extends Controller
             return response()->json(['error' => 'Unauthenticated'], 401);
         }
 
-        $application = Application::with('scholarship')->find($application_id);
+        $application = Application::with('user', 'scholarship', 'requirements')->find($application_id);
 
         if (!$application) {
             return response()->json(['error' => 'Application not found'], 404);
         }
-
         if (!$application->scholarship) {
             return response()->json(['error' => 'Scholarship not found'], 404);
         }
@@ -170,4 +169,153 @@ class ApplicationsController extends Controller
     //         'data' => $application
     //     ]);
     // }
+
+    public function getAllApplicant()
+    {
+        $user = auth()->user();
+
+        $applications = Application::with('user', 'scholarship')
+            ->whereHas('scholarship', function ($query) use ($user) {
+                $query->where('provider_id', $user->id);
+            })
+            ->latest()
+            ->get();
+
+        if($applications->isEmpty()) {
+            return response()->json([
+                'status' => 'Empty',
+                'message' => 'No applications found'
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Applications retrieved successfully',
+            'data' => $applications
+            ], 200);
+    }
+
+    public function getApplicant($id)
+    {
+        $user = auth()->user(); 
+
+        $application = Application::with('user', 'scholarship')->find($id);
+
+        if (!$application) {
+            return response()->json(['message' => 'Application not found'], 404);
+        }
+
+        if ($user->role_id == 1) {
+            return response()->json($application);
+        }
+
+        if ($user->role_id == 2 && $application->scholarship->provider_id == $user->id) {
+            return response()->json($application);
+        }
+
+        return response()->json(['message' => 'Unauthorized access'], 403);
+    }
+
+    public function getApplicantOnScholarship($scholarship_id)
+    {
+        try {
+            $applications = Application::with('user')
+                ->where('scholarship_id', $scholarship_id)
+                ->get();
+
+            $requirements = Application::with('requirements')
+                ->where('scholarship_id', $scholarship_id)
+                ->get()
+                ->pluck('requirements')
+                ->flatten();
+
+            if($applications->isEmpty()) {
+                $result = '(' . count($applications) . ') No applicants found for this scholarship';
+            } else {
+                $result = '(' . count($applications) . ') Applicants found for this scholarship';
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $result,
+                'data' => $applications,
+                'requirements' => $requirements
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch applicants.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getApplicantOnOwnScholarship($scholarship_id)
+    {
+        $user = auth()->user();
+
+        $applications = Application::with('user')
+            ->where('scholarship_id', $scholarship_id)
+            ->whereHas('scholarship', function ($query) use ($user) {
+                $query->where('provider_id', $user->id);
+            })
+            ->get();
+
+        $requirements = Application::with('requirements')
+            ->where('scholarship_id', $scholarship_id)
+            ->get()
+            ->pluck('requirements')
+            ->flatten();
+
+        return response()->json([
+            'message' => 'Applications retrieved successfully',
+            'data' => $applications
+        ], 200);
+    }
+
+    public function getApprovedApplications(){
+        $applications = Application::where('status', 'approved')->get();
+
+        if($applications->isEmpty()) {
+            $result = '(' . count($applications) . ') No approved applications found';
+        } else {
+            $result = '(' . count($applications) . ') Approved applications found';
+        }
+
+        return response()->json([
+            'message' => $result,
+            'data' => $applications
+        ], 200);
+    }
+
+    public function getRejectedApplications()
+    {
+        $applications = Application::where('status', 'rejected')->get();
+
+        if($applications->isEmpty()) {
+            $result = '(' . count($applications) . ') No Rejected applications found';
+        } else {
+            $result = '(' . count($applications) . ') Rejected applications found';
+        }
+
+        return response()->json([
+            'message' => $result,
+            'data' => $applications
+        ], 200);
+    }
+
+    public function getPendingApplications(){
+        $applications = Application::where('status', 'pending')->get();
+
+        if($applications->isEmpty()) {
+            $result = '(' . count($applications) . ') No Pending applications found';
+        } else {
+            $result = '(' . count($applications) . ') Pending applications found';
+        }
+
+        return response()->json([
+            'message' => $result,
+            'data' => $applications
+        ], 200);
+    }
 }

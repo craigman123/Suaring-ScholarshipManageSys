@@ -26,6 +26,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'Apilogout']);
+    Route::put('/changepassword', [AuthController::class, 'changePassword']);
     Route::get('/scholarships', [ScholarshipController::class, 'getScholarships']);
     Route::get('/scholarships/{id}', [ScholarshipController::class, 'getScholarship']);
 });
@@ -35,9 +36,16 @@ Route::middleware(['auth:sanctum', 'role:1'])->group(function () {
 
     Route::get('/user', [UserController::class, 'getUsers']);
     Route::get('/user/{id}', [UserController::class, 'getUser']);
-    Route::get('/user/search?email={email}', [UserController::class, 'getUserSearch']); 
+    Route::get('/admin/user/Usersearch', [UserController::class, 'getUserSearch']);
 
     Route::prefix('admin')->group(function () {
+        Route::get('/uploadedScholarships', [ScholarshipController::class, 
+            'getAllUploadedScholarships']);
+
+        Route::get('/user/applicants', [ApplicationsController::class, 'getAllApplicant']);
+        Route::get('/user/applicant/{id}', [ApplicationsController::class, 'getApplicant']);
+        Route::get('/user/applicants/{scholarship_id}', [ApplicationsController::class,
+            'getApplicantOnScholarship']);
 
         Route::post('/scholarships', [ScholarshipController::class, 'store']);
         Route::put('/scholarships/{id}', [ScholarshipController::class, 'update']);
@@ -49,7 +57,15 @@ Route::middleware(['auth:sanctum', 'role:1'])->group(function () {
         
         Route::get('/logs', [LogController::class, 'index']);
         Route::get('/logs/search?user_id={user_id}', [LogController::class, 'getLogSearch']);
+
+        Route::put('/user/deactivate/{id}', [UserController::class, 'deactivateUser']);
+
+        Route::get('/user/searchByCategory', [UserController::class, 'searchByCategory']);
+        Route::get('/userInquiry/{user_id}', [UserController::class, 'inquireUser']);    
     });
+
+    Route::put('/admin/approveReject/{application_id}', [ApplicationsController::class,
+             'approveReject']);
 });
 
 Route::middleware('auth:sanctum', 'role:3')->group(function () {
@@ -74,6 +90,10 @@ Route::middleware('auth:sanctum', 'role:3')->group(function () {
         Route::middleware('auth:sanctum')->match(['post', 'patch'], '/profile/update', [ProfileController::class, 'update'])
             ->name('profile.update');
         Route::get('/profile/show', [ProfileController::class, 'getProfile'])->name('profile.show');
+
+        Route::get('/approvedApplications', [ApplicationsController::class, 'getApprovedApplications']);
+        Route::get('/rejectedApplications', [ApplicationsController::class, 'getRejectedApplications']);
+        Route::get('/pendingApplications', [ApplicationsController::class, 'getPendingApplications']);
     });
 });
 
@@ -99,6 +119,10 @@ Route::middleware('auth:sanctum', 'role:2')->group(function () {
             'destroy']);
 
         Route::get('/userInquiry/{user_id}', [UserController::class, 'inquireUser']);    
+        Route::get('/user/applicants', [ApplicationsController::class, 'getAllApplicant']);
+        Route::get('/user/applicant/{id}', [ApplicationsController::class, 'getApplicant']);
+        Route::get('/user/applicants/{scholarship_id}', [ApplicationsController::class,
+            'getApplicantOnOwnScholarship']);
     });
 
     Route::middleware('auth:sanctum')->put('/provider/approveReject/{application_id}', [ApplicationsController::class,
